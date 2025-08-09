@@ -223,7 +223,83 @@
             text-align: center;
             margin-top: 20px;
         }
+/* --- ESTILOS PARA LA PANTALLA DE AGRADECIMIENTO --- */
+#success-message {
+    display: none; /* Se mantiene oculto hasta que se envía el form */
+    padding: 40px 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
 
+.success-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.success-logo {
+    max-width: 150px; /* Ajusta el tamaño de tu logo */
+    margin-bottom: 20px;
+}
+
+#success-message h2 {
+    font-size: 28px;
+    font-weight: 900;
+    color: #333;
+    margin: 0;
+}
+
+#success-message p {
+    font-size: 16px;
+    color: #555;
+    margin: 0;
+    max-width: 80%;
+}
+
+.social-section {
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 1px solid #eee;
+    width: 100%;
+}
+
+.social-title {
+    font-weight: 700;
+    font-size: 18px !important; /* Usamos !important para asegurar que sobreescriba otros estilos de 'p' */
+    max-width: 100% !important;
+}
+
+.social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 15px;
+}
+
+.social-icon {
+    width: 48px;
+    height: 48px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+}
+
+.social-icon svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Colores de los iconos */
+.social-icon.facebook svg { fill: #1877F2; }
+.social-icon.instagram svg { fill: #E4405F; }
+.social-icon.whatsapp svg { fill: #25D366; }
     </style>
 </head>
 <body>
@@ -395,10 +471,10 @@
                     body: JSON.stringify(data),
                 });
 
-                if (response.ok) {
-                    form.style.display = 'none';
-                    successMessage.style.display = 'block';
-                } else {
+if (response.ok) {
+    form.style.display = 'none'; // Oculta el formulario
+    successMessage.style.display = 'block'; // Muestra la nueva pantalla de éxito
+} else {
                     throw new Error('Error al enviar la encuesta.');
                 }
 

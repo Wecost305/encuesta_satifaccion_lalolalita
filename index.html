@@ -223,9 +223,21 @@
             text-align: center;
             margin-top: 20px;
         }
-/* --- ESTILOS PARA LA PANTALLA DE AGRADECIMIENTO --- */
+/* --- ESTILOS PARA LA PANTALLA DE AGRADECIMIENTO (CORREGIDO ) --- */
+#success-container {
+    display: none; /* Este es el contenedor que ocultamos/mostramos */
+    position: fixed; /* Lo ponemos sobre toda la página */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f0f0f0; /* Mismo color de fondo que el body */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 #success-message {
-    display: none; /* Se mantiene oculto hasta que se envía el form */
     padding: 40px 20px;
     background-color: #ffffff;
     border-radius: 8px;
@@ -233,9 +245,6 @@
     width: 100%;
     max-width: 500px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.success-content {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -243,7 +252,7 @@
 }
 
 .success-logo {
-    max-width: 150px; /* Ajusta el tamaño de tu logo */
+    max-width: 150px;
     margin-bottom: 20px;
 }
 
@@ -270,7 +279,7 @@
 
 .social-title {
     font-weight: 700;
-    font-size: 18px !important; /* Usamos !important para asegurar que sobreescriba otros estilos de 'p' */
+    font-size: 18px !important;
     max-width: 100% !important;
 }
 
@@ -291,13 +300,7 @@
     transform: scale(1.1);
 }
 
-.social-icon svg {
-    width: 100%;
-    height: 100%;
-}
-
-/* Colores de los iconos */
-.social-icon.facebook svg { fill: #1877F2; }
+.social-icon svg { fill: #1877F2; }
 .social-icon.instagram svg { fill: #E4405F; }
 .social-icon.whatsapp svg { fill: #25D366; }
     </style>
@@ -406,8 +409,9 @@
 
             <button type="submit" class="submit-btn">Enviar Sugerencias</button>
             
-<div id="success-message">
-    <div class="success-content">
+<!-- PANTALLA DE AGRADECIMIENTO CORREGIDA -->
+<div id="success-container" style="display: none;">
+    <div id="success-message">
         <!-- 1. Agrega aquí la URL de tu logo -->
         <img src="URL_DE_TU_LOGO_AQUI" alt="Logo Lalo Lalita" class="success-logo">
 
@@ -434,57 +438,57 @@
         </form>
     </div>
 
-    <!-- ... (resto del código HTML) ... -->
-    <script>
-        const form = document.getElementById('satisfaction-form');
-        const successMessage = document.getElementById('success-message');
-        
-        // La nueva URL apunta a nuestra función de Netlify
-        const SUBMIT_URL = '/.netlify/functions/submit-survey';
+<script>
+    const formContainer = document.querySelector('.survey-container'); // Seleccionamos el contenedor principal
+    const successContainer = document.getElementById('success-container'); // Seleccionamos el nuevo contenedor
+    const form = document.getElementById('satisfaction-form');
+    
+    const SUBMIT_URL = '/.netlify/functions/submit-survey';
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault();
 
-            const submitButton = form.querySelector('.submit-btn');
-            submitButton.disabled = true;
-            submitButton.textContent = 'Enviando...';
+        const submitButton = form.querySelector('.submit-btn');
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
 
-            const formData = new FormData(form);
-            const data = {
-                Mesero: formData.get('mesero'),
-                Fecha: formData.get('fecha'),
-                Atencion: formData.get('atencion'),
-                Calidad: formData.get('calidad'),
-                Precio: formData.get('precio'),
-                ComoConocio: formData.get('como_conocio'),
-                Comentarios: formData.get('comentarios'),
-                Recomienda: formData.get('recomienda')
-            };
+        const formData = new FormData(form);
+        const data = {
+            Mesero: formData.get('mesero'),
+            Fecha: formData.get('fecha'),
+            Atencion: formData.get('atencion'),
+            Calidad: formData.get('calidad'),
+            Precio: formData.get('precio'),
+            ComoConocio: formData.get('como_conocio'),
+            Comentarios: formData.get('comentarios'),
+            Recomienda: formData.get('recomienda')
+        };
 
-            try {
-                // Enviamos los datos a nuestra propia función, no a Airtable
-                const response = await fetch(SUBMIT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
-                });
+        try {
+            const response = await fetch(SUBMIT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
 
-if (response.ok) {
-    form.style.display = 'none'; // Oculta el formulario
-    successMessage.style.display = 'block'; // Muestra la nueva pantalla de éxito
-} else {
-                    throw new Error('Error al enviar la encuesta.');
-                }
-
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Hubo un problema al enviar tu encuesta. Por favor, inténtalo de nuevo.');
-                submitButton.disabled = false;
-                submitButton.textContent = 'Enviar Sugerencias';
+            if (response.ok) {
+                // ACCIÓN CORREGIDA:
+                formContainer.style.display = 'none'; // Ocultamos todo el formulario
+                successContainer.style.display = 'flex'; // Mostramos el contenedor de éxito
+            } else {
+                throw new Error('Error al enviar la encuesta.');
             }
-        });
-    </script>
+
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Hubo un problema al enviar tu encuesta. Por favor, inténtalo de nuevo.');
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar Sugerencias';
+        }
+    });
+</script>
+
 </body>
 </html>

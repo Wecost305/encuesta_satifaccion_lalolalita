@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Satisfacción - Lalo Lalita</title>
+    <style>
+        /* --- Estilos Generales --- */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap' );
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+
+        /* --- Contenedor Principal del Formulario --- */
+        .survey-container {
+            background-color: #ffffff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            overflow: hidden;
+        }
+
+        /* --- Encabezado --- */
+        .header {
+            background-color: #333;
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+        .header .subtitle {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f3d250; /* Color amarillo del subtítulo */
+        }
+
+        /* --- Cuerpo del Formulario --- */
+        .form-body {
+            padding: 25px 30px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        h2 {
+            font-size: 16px;
+            font-weight: 700;
+            color: #555;
+            margin-bottom: 15px;
+        }
+
+        /* --- Campos de Texto y Fecha --- */
+        .input-group {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .form-field {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .form-field label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        .form-field input[type="text"],
+        .form-field input[type="date"],
+        .form-field textarea {
+            border: none;
+            border-bottom: 2px solid #ccc;
+            padding: 8px 0;
+            font-size: 16px;
+            font-family: 'Montserrat', sans-serif;
+            transition: border-color 0.3s;
+        }
+        .form-field input[type="text"]:focus,
+        .form-field input[type="date"]:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-bottom-color: #f3d250;
+        }
+        .form-field textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* --- Opciones de Calificación (Excelente, Regular, Mala) --- */
+        .rating-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .rating-question p {
+            margin: 0;
+            font-size: 15px;
+        }
+        .rating-options {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px; /* <-- Esta es la propiedad que crea el espacio entre los elementos */
+        }
+        .rating-options input[type="radio"] {
+            display: none; /* Ocultamos el radio button original */
+        }
+        .rating-options label {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 2px solid #a2d2ff; /* Azul claro del borde */
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .rating-options input[type="radio"]:checked + label {
+            background-color: #a2d2ff;
+            border-color: #6a9eda;
+        }
+        .rating-header {
+            display: flex;
+            justify-content: flex-end; /* Alinea todo el bloque a la derecha */
+            font-size: 6.5px;
+            font-weight: 700;
+            color: #888;
+            margin-bottom: 8px;
+        }
+        .rating-header span {
+            /* Damos a cada etiqueta un ancho fijo igual al del círculo (28px) + el espacio entre ellos (15px) */
+            /* Esto no es del todo preciso, es mejor usar flexbox para el alineamiento */
+            width: 28px; /* Ancho del círculo */
+            text-align: center; /* Centramos el texto */
+            box-sizing: border-box; /* Importante para que el padding no afecte el ancho */
+        }
+        .rating-header .rating-column {
+            width: 28px; /* Ancho del círculo */
+            text-align: center; /* Centra el texto dentro de su espacio */
+        }
+        /* --- Opciones de 'Cómo nos conociste' --- */
+        .choice-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .choice-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .choice-item input[type="radio"] {
+            display: none;
+        }
+        .choice-item label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 15px;
+        }
+        .choice-item label::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #a2d2ff;
+            margin-right: 10px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+        .choice-item input[type="radio"]:checked + label::before {
+            background-color: #a2d2ff;
+            border-color: #6a9eda;
+        }
+
+        /* --- Botón de Enviar --- */
+        .submit-btn {
+            background-color: #f3d250;
+            color: #333;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            font-size: 18px;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #e0c24a;
+        }
+        
+        /* --- Mensaje de éxito --- */
+        #success-message {
+            display: none;
+            padding: 20px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="survey-container">
+        <div class="header">
+            <h1>LALO LALITA</h1>
+            <span class="subtitle">LERMA</span>
+        </div>
+
+        <form id="satisfaction-form" class="form-body">
+            <p style="text-align:center; font-weight: 700; background-color: #f3d250; padding: 10px; border-radius: 5px; margin-top:0;">EVALÚANOS PARA OFRECERTE LA MEJOR CALIDAD Y SERVICIO.</p>
+
+            <div class="form-section">
+                <div class="input-group">
+                    <div class="form-field">
+                        <label for="mesero">MESERO:</label>
+                        <input type="text" id="mesero" name="mesero">
+                    </div>
+                    <div class="form-field">
+                        <label for="fecha">FECHA:</label>
+                        <input type="date" id="fecha" name="fecha" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>CALIFÍCANOS MARCANDO LA CASILLA</h2>
+                <div class="rating-header">
+                    <div class="rating-options"> <!-- Usamos la misma clase para alinear -->
+                        <span class="rating-column">EXCELENTE</span>
+                        <span class="rating-column">REGULAR</span>
+                        <span class="rating-column">MALA</span>
+                    </div>
+                </div>
+                <!-- Pregunta 1 -->
+                <div class="rating-question">
+                    <p>Atención y amabilidad del mesero</p>
+                    <div class="rating-options">
+                        <input type="radio" id="atencion-exc" name="atencion" value="Excelente" required><label for="atencion-exc"></label>
+                        <input type="radio" id="atencion-reg" name="atencion" value="Regular"><label for="atencion-reg"></label>
+                        <input type="radio" id="atencion-mal" name="atencion" value="Mala"><label for="atencion-mal"></label>
+                    </div>
+                </div>
+                <!-- Pregunta 2 -->
+                <div class="rating-question">
+                    <p>Calidad y sabor de los platillos y bebidas</p>
+                    <div class="rating-options">
+                        <input type="radio" id="calidad-exc" name="calidad" value="Excelente" required><label for="calidad-exc"></label>
+                        <input type="radio" id="calidad-reg" name="calidad" value="Regular"><label for="calidad-reg"></label>
+                        <input type="radio" id="calidad-mal" name="calidad" value="Mala"><label for="calidad-mal"></label>
+                    </div>
+                </div>
+                <!-- Pregunta 3 -->
+                <div class="rating-question">
+                    <p>Calidad y presentación en relación al precio</p>
+                    <div class="rating-options">
+                        <input type="radio" id="precio-exc" name="precio" value="Excelente" required><label for="precio-exc"></label>
+                        <input type="radio" id="precio-reg" name="precio" value="Regular"><label for="precio-reg"></label>
+                        <input type="radio" id="precio-mal" name="precio" value="Mala"><label for="precio-mal"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>¿CÓMO NOS CONOCISTE?</h2>
+                <div class="choice-grid">
+                    <div class="choice-item">
+                        <input type="radio" id="conocio-ubicacion" name="como_conocio" value="Ubicación" required><label for="conocio-ubicacion">UBICACIÓN</label>
+                    </div>
+                    <div class="choice-item">
+                        <input type="radio" id="conocio-redes" name="como_conocio" value="Redes Sociales"><label for="conocio-redes">REDES SOCIALES</label>
+                    </div>
+                    <div class="choice-item">
+                        <input type="radio" id="conocio-recomendacion" name="como_conocio" value="Recomendación"><label for="conocio-recomendacion">RECOMENDACIÓN</label>
+                    </div>
+                    <div class="choice-item">
+                        <input type="radio" id="conocio-volante" name="como_conocio" value="Volante"><label for="conocio-volante">VOLANTE</label>
+                    </div>
+                    <div class="choice-item">
+                        <input type="radio" id="conocio-otro" name="como_conocio" value="Otro"><label for="conocio-otro">OTRO</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-field">
+                    <label for="comentarios">COMENTARIOS:</label>
+                    <textarea id="comentarios" name="comentarios"></textarea>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>¿NOS RECOMENDARÍAS?</h2>
+                <div class="choice-grid" style="grid-template-columns: 1fr 1fr 2fr;">
+                    <div class="choice-item">
+                        <input type="radio" id="recomienda-si" name="recomienda" value="Sí" required><label for="recomienda-si">SI</label>
+                    </div>
+                    <div class="choice-item">
+                        <input type="radio" id="recomienda-no" name="recomienda" value="No"><label for="recomienda-no">NO</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">Enviar Sugerencias</button>
+            
+            <div id="success-message">
+                ¡Gracias por tus comentarios! Hemos recibido tu encuesta.
+            </div>
+        </form>
+    </div>
+
+    <!-- ... (resto del código HTML) ... -->
+    <script>
+        const form = document.getElementById('satisfaction-form');
+        const successMessage = document.getElementById('success-message');
+        
+        // La nueva URL apunta a nuestra función de Netlify
+        const SUBMIT_URL = '/.netlify/functions/submit-survey';
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const submitButton = form.querySelector('.submit-btn');
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+
+            const formData = new FormData(form);
+            const data = {
+                Mesero: formData.get('mesero'),
+                Fecha: formData.get('fecha'),
+                Atencion: formData.get('atencion'),
+                Calidad: formData.get('calidad'),
+                Precio: formData.get('precio'),
+                ComoConocio: formData.get('como_conocio'),
+                Comentarios: formData.get('comentarios'),
+                Recomienda: formData.get('recomienda')
+            };
+
+            try {
+                // Enviamos los datos a nuestra propia función, no a Airtable
+                const response = await fetch(SUBMIT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    form.style.display = 'none';
+                    successMessage.style.display = 'block';
+                } else {
+                    throw new Error('Error al enviar la encuesta.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Hubo un problema al enviar tu encuesta. Por favor, inténtalo de nuevo.');
+                submitButton.disabled = false;
+                submitButton.textContent = 'Enviar Sugerencias';
+            }
+        });
+    </script>
+</body>
+</html>

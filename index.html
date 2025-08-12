@@ -303,6 +303,58 @@
 .social-icon svg { fill: #1877F2; }
 .social-icon.instagram svg { fill: #E4405F; }
 .social-icon.whatsapp svg { fill: #25D366; }
+
+        /* =============================================== */
+/* --- ESTILOS RESPONSIVOS PARA MÓVILES Y TABLETS --- */
+/* =============================================== */
+
+/* Se aplicará a pantallas de 600px de ancho o menos */
+@media (max-width: 600px) {
+
+    /* 1. Ajusta el padding general del formulario para que no se pegue a los bordes */
+    .form-body {
+        padding: 20px 15px;
+    }
+
+    /* 2. Corrige el problema de "Mesero" y "Fecha" */
+    .input-group {
+        flex-direction: column; /* Pone los elementos en columna (uno arriba del otro) */
+        gap: 25px; /* Aumenta el espacio entre ellos */
+    }
+
+    /* 3. Corrige la sección de calificación (Excelente, Regular, Mala) */
+    .rating-question {
+        flex-direction: column; /* Pone el texto arriba y los círculos abajo */
+        align-items: flex-start; /* Alinea el texto a la izquierda */
+        gap: 15px; /* Espacio entre el texto y los círculos */
+    }
+
+    .rating-question p {
+        font-size: 16px; /* Hacemos el texto un poco más grande y legible */
+    }
+
+    .rating-options {
+        width: 100%; /* Hacemos que los círculos ocupen todo el ancho */
+        justify-content: space-around; /* Distribuimos los círculos equitativamente */
+    }
+
+    .rating-header {
+        justify-content: space-around; /* Alineamos los textos con los círculos */
+        padding-right: 0;
+        font-size: 10px; /* Aumentamos un poco el tamaño para legibilidad */
+    }
+    
+    .rating-header .rating-column {
+        width: auto; /* Quitamos el ancho fijo para que se ajuste mejor */
+    }
+
+    /* 4. Ajusta la sección de "¿Cómo nos conociste?" */
+    .choice-grid {
+        grid-template-columns: 1fr; /* Pone todas las opciones en una sola columna */
+        gap: 20px;
+    }
+}
+
     </style>
 </head>
 <body>

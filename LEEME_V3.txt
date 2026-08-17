@@ -1,0 +1,32 @@
+LALO LALITA - ENCUESTA V3
+==========================
+
+Esta versión ya envía todas las preguntas nuevas al webhook de Airtable.
+
+Campos enviados:
+- Mesero
+- Fecha_Visita
+- Horario
+- Consumo (lista)
+- Atencion (5/3/1)
+- Sabor (5/3/1)
+- Presentacion (5/3/1)
+- Tiempo_Servicio (5/3/1)
+- Limpieza (5/3/1)
+- Ambiente (5/3/1)
+- Calidad_Precio (5/3/1)
+- Tiempo_Espera
+- Temperatura
+- Tuvo_Problema (true/false)
+- Tipo_Problema (lista)
+- Como_Conocio
+- NPS (0-10)
+- Comentarios
+
+No se envían:
+- ID_Encuesta: Airtable Autonumber
+- Fecha_Registro: Airtable Created time
+
+IMPORTANTE:
+Antes de probar en producción, actualiza la automatización de Airtable para mapear
+cada campo recibido por el webhook hacia la columna correspondiente de la tabla Respuestas.

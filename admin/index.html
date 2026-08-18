@@ -179,7 +179,7 @@
 
     .kpis {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0,1fr));
+      grid-template-columns: repeat(6, minmax(0,1fr));
       gap: 14px;
       margin-bottom: 18px;
     }
@@ -357,9 +357,14 @@
 
     <section class="kpis">
       <article class="card kpi">
-        <div class="label">Respuestas</div>
-        <div class="value" id="kpiResponses">…</div>
-        <div class="sub" id="kpiResponsesSub">Leyendo registros reales de Airtable</div>
+        <div class="label">Respuestas totales</div>
+        <div class="value" id="kpiResponsesTotal">…</div>
+        <div class="sub" id="kpiResponsesTotalSub">Registros acumulados en Airtable</div>
+      </article>
+      <article class="card kpi">
+        <div class="label">Respuestas analizadas</div>
+        <div class="value" id="kpiResponsesAnalyzed">…</div>
+        <div class="sub" id="kpiResponsesAnalyzedSub">Encuestas dentro del periodo seleccionado</div>
       </article>
       <article class="card kpi">
         <div class="label">Satisfacción promedio</div>
@@ -457,19 +462,95 @@
       </div>
     </section>
 
-    <p class="footer-note">Fase 3.2 · La tarjeta Respuestas ya usa Airtable real. Los demás indicadores continúan con datos de demostración hasta la siguiente integración.</p>
+    <p class="footer-note">Fase 3.2 · Respuestas totales y Respuestas analizadas por Fecha_Visita ya usan Airtable real. Los demás indicadores continúan con datos de demostración hasta la siguiente integración.</p>
   </main>
 
   <script>
     let realTotalResponses = null;
+    let realAnalyzedResponses = null;
 
-    async function loadRealAirtableCount() {
+    function pad2(value) {
+      return String(value).padStart(2, '0');
+    }
+
+    function toIsoLocal(date) {
+      return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+    }
+
+    function parseIsoLocal(value) {
+      const [year, month, day] = value.split('-').map(Number);
+      return new Date(year, month - 1, day);
+    }
+
+    function addDays(date, amount) {
+      const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      result.setDate(result.getDate() + amount);
+      return result;
+    }
+
+    function formatDateLong(date) {
+      return new Intl.DateTimeFormat('es-MX', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }).format(date).replace('.', '');
+    }
+
+    function formatRangeLabel(from, to) {
+      return `Periodo mostrado: ${formatDateLong(parseIsoLocal(from))} – ${formatDateLong(parseIsoLocal(to))}`;
+    }
+
+    function getSelectedDateRange() {
+      const key = document.getElementById('periodo').value;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+      if (key === '7') {
+        return { from: toIsoLocal(addDays(today, -6)), to: toIsoLocal(today) };
+      }
+
+      if (key === '30') {
+        return { from: toIsoLocal(addDays(today, -29)), to: toIsoLocal(today) };
+      }
+
+      if (key === 'week') {
+        // Semana anterior completa: lunes a domingo.
+        const dayOfWeek = today.getDay(); // 0 domingo, 1 lunes...
+        const daysSinceMonday = (dayOfWeek + 6) % 7;
+        const currentMonday = addDays(today, -daysSinceMonday);
+        const previousMonday = addDays(currentMonday, -7);
+        const previousSunday = addDays(currentMonday, -1);
+        return { from: toIsoLocal(previousMonday), to: toIsoLocal(previousSunday) };
+      }
+
+      if (key === 'custom') {
+        const from = document.getElementById('desde').value;
+        const to = document.getElementById('hasta').value;
+        if (!from || !to) {
+          throw new Error('Selecciona las fechas Desde y Hasta.');
+        }
+        if (from > to) {
+          throw new Error('La fecha Desde no puede ser posterior a Hasta.');
+        }
+        return { from, to };
+      }
+
+      return { from: toIsoLocal(addDays(today, -6)), to: toIsoLocal(today) };
+    }
+
+    async function loadRealAirtableCounts(range) {
       const status = document.getElementById('dataStatus');
-      const value = document.getElementById('kpiResponses');
-      const sub = document.getElementById('kpiResponsesSub');
+      const totalValue = document.getElementById('kpiResponsesTotal');
+      const totalSub = document.getElementById('kpiResponsesTotalSub');
+      const analyzedValue = document.getElementById('kpiResponsesAnalyzed');
+      const analyzedSub = document.getElementById('kpiResponsesAnalyzedSub');
+
+      analyzedValue.textContent = '…';
+      analyzedSub.textContent = 'Calculando encuestas del periodo seleccionado';
 
       try {
-        const response = await fetch('/.netlify/functions/dashboard-data', {
+        const params = new URLSearchParams({ from: range.from, to: range.to });
+        const response = await fetch(`/.netlify/functions/dashboard-data?${params.toString()}`, {
           method: 'GET',
           headers: { 'Accept': 'application/json' },
           cache: 'no-store'
@@ -483,16 +564,23 @@
         }
 
         realTotalResponses = payload.total;
-        value.textContent = realTotalResponses.toLocaleString('es-MX');
-        sub.textContent = 'Total actual de registros en Airtable · sin filtro de fecha en esta etapa';
-        status.textContent = 'AIRTABLE CONECTADO · DEMÁS DATOS DEMO';
+        realAnalyzedResponses = payload.analyzed;
+
+        totalValue.textContent = realTotalResponses.toLocaleString('es-MX');
+        totalSub.textContent = 'Total acumulado de registros en Airtable';
+
+        analyzedValue.textContent = realAnalyzedResponses.toLocaleString('es-MX');
+        analyzedSub.textContent = `De ${realTotalResponses.toLocaleString('es-MX')} respuestas totales · según Fecha_Visita`;
+
+        status.textContent = 'AIRTABLE CONECTADO · CONTEOS REALES · DEMÁS DATOS DEMO';
         status.style.background = '#e3f5e9';
         status.style.color = '#287c43';
         status.style.borderColor = '#b9dfc5';
       } catch (error) {
         console.error('No se pudo leer Airtable:', error);
-        value.textContent = '—';
-        sub.textContent = 'No se pudo consultar Airtable. Revisa variables y logs de Functions.';
+        totalValue.textContent = realTotalResponses !== null ? realTotalResponses.toLocaleString('es-MX') : '—';
+        analyzedValue.textContent = '—';
+        analyzedSub.textContent = error.message || 'No fue posible consultar el periodo.';
         status.textContent = 'ERROR DE CONEXIÓN AIRTABLE';
         status.style.background = '#fde5e5';
         status.style.color = '#a83b3b';
@@ -557,33 +645,44 @@
     });
 
     renderScores(dashboardSets['7'].scores);
-    loadRealAirtableCount();
 
     const periodo = document.getElementById('periodo');
     const customDates = document.getElementById('customDates');
     periodo.addEventListener('change', () => customDates.classList.toggle('active', periodo.value === 'custom'));
 
-    document.getElementById('applyFilter').addEventListener('click', () => {
+    async function applySelectedPeriod() {
       let key = periodo.value;
       let data = dashboardSets[key] || dashboardSets['7'];
-      if (key === 'custom') {
-        const desde = document.getElementById('desde').value;
-        const hasta = document.getElementById('hasta').value;
-        data = dashboardSets['7'];
-        document.getElementById('periodNote').textContent = desde && hasta ? `Periodo mostrado: ${desde} → ${hasta} (demo)` : 'Selecciona ambas fechas';
-      } else {
-        document.getElementById('periodNote').textContent = data.note;
+
+      try {
+        const range = getSelectedDateRange();
+        document.getElementById('periodNote').textContent = formatRangeLabel(range.from, range.to);
+        await loadRealAirtableCounts(range);
+
+        // En esta versión solo los dos conteos son reales. El resto conserva
+        // los conjuntos DEMO mientras integramos las métricas una por una.
+        if (key === 'custom') data = dashboardSets['7'];
+        document.getElementById('kpiSatisfaction').innerHTML = `${data.satisfaction}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
+        document.getElementById('kpiNps').textContent = data.nps;
+        document.getElementById('kpiIssues').textContent = data.issues;
+        document.getElementById('kpiWeak').textContent = data.weak;
+        renderScores(data.scores);
+        trendChart.data.labels = data.days;
+        trendChart.data.datasets[0].data = data.trend;
+        trendChart.update();
+        consumptionChart.data.datasets[0].data = data.consumption;
+        consumptionChart.update();
+        problemsChart.data.datasets[0].data = data.problems;
+        problemsChart.update();
+      } catch (error) {
+        document.getElementById('periodNote').textContent = error.message;
       }
-      document.getElementById('kpiResponses').textContent = realTotalResponses !== null ? realTotalResponses.toLocaleString('es-MX') : '…';
-      document.getElementById('kpiSatisfaction').innerHTML = `${data.satisfaction}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
-      document.getElementById('kpiNps').textContent = data.nps;
-      document.getElementById('kpiIssues').textContent = data.issues;
-      document.getElementById('kpiWeak').textContent = data.weak;
-      renderScores(data.scores);
-      trendChart.data.labels = data.days; trendChart.data.datasets[0].data = data.trend; trendChart.update();
-      consumptionChart.data.datasets[0].data = data.consumption; consumptionChart.update();
-      problemsChart.data.datasets[0].data = data.problems; problemsChart.update();
-    });
+    }
+
+    document.getElementById('applyFilter').addEventListener('click', applySelectedPeriod);
+
+    // Carga inicial: últimos 7 días reales.
+    applySelectedPeriod();
   </script>
 </body>
 </html>

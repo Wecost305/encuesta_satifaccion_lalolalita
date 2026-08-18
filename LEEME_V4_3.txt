@@ -1,0 +1,25 @@
+LALO LALITA - V4.3 DASHBOARD REAL
+
+Esta versión conecta TODO el dashboard administrativo a Airtable usando Fecha_Visita y el rango seleccionado.
+
+Datos reales:
+- Respuestas totales
+- Respuestas analizadas
+- Satisfacción promedio
+- NPS y comparación con el periodo anterior
+- Porcentaje y cantidad de visitas con problema
+- Área más débil
+- Calificación por área
+- Evolución temporal
+- Consumo
+- Problemas reportados
+- Comentarios recientes
+- Conclusiones automáticas sin IA
+
+Variables Netlify requeridas:
+AIRTABLE_TOKEN
+AIRTABLE_BASE_ID
+AIRTABLE_TABLE_NAME
+AIRTABLE_WEBHOOK_URL
+
+El token solo se usa en la Netlify Function; no se expone en /admin.

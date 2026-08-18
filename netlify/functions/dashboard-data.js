@@ -19,15 +19,42 @@ exports.handler = async function (event) {
     });
   }
 
+  const query = event.queryStringParameters || {};
+  const from = normalizeIsoDate(query.from);
+  const to = normalizeIsoDate(query.to);
+
+  if ((query.from && !from) || (query.to && !to)) {
+    return json(400, {
+      success: false,
+      error: 'Formato de fecha inválido. Usa YYYY-MM-DD.'
+    });
+  }
+
+  if ((from && !to) || (!from && to)) {
+    return json(400, {
+      success: false,
+      error: 'Para filtrar se requieren las fechas from y to.'
+    });
+  }
+
+  if (from && to && from > to) {
+    return json(400, {
+      success: false,
+      error: 'La fecha inicial no puede ser posterior a la fecha final.'
+    });
+  }
+
   try {
     let total = 0;
+    let analyzed = 0;
+    let withoutVisitDate = 0;
     let offset = null;
     let pages = 0;
 
     do {
       const params = new URLSearchParams();
       params.set('pageSize', '100');
-      // Solo pedimos un campo para reducir el tamaño de la respuesta.
+      // Solo necesitamos Fecha_Visita para los dos conteos.
       params.append('fields[]', 'Fecha_Visita');
       if (offset) params.set('offset', offset);
 
@@ -50,11 +77,24 @@ exports.handler = async function (event) {
         });
       }
 
-      total += Array.isArray(payload.records) ? payload.records.length : 0;
+      const records = Array.isArray(payload.records) ? payload.records : [];
+      total += records.length;
+
+      for (const record of records) {
+        const visitDate = normalizeIsoDate(record?.fields?.Fecha_Visita);
+        if (!visitDate) {
+          withoutVisitDate += 1;
+          continue;
+        }
+
+        if (!from || !to || (visitDate >= from && visitDate <= to)) {
+          analyzed += 1;
+        }
+      }
+
       offset = payload.offset || null;
       pages += 1;
 
-      // Protección contra bucles inesperados.
       if (pages > 1000) {
         throw new Error('Se alcanzó el límite interno de paginación.');
       }
@@ -63,6 +103,10 @@ exports.handler = async function (event) {
     return json(200, {
       success: true,
       total,
+      analyzed,
+      from: from || null,
+      to: to || null,
+      withoutVisitDate,
       source: 'airtable',
       countedAt: new Date().toISOString()
     });
@@ -74,6 +118,25 @@ exports.handler = async function (event) {
     });
   }
 };
+
+function normalizeIsoDate(value) {
+  if (!value || typeof value !== 'string') return null;
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  ) return null;
+
+  return `${match[1]}-${match[2]}-${match[3]}`;
+}
 
 function json(statusCode, body) {
   return {

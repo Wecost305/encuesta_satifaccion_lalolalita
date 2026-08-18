@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Reporte de experiencia del cliente</title>
+  <style>
+    :root{--ink:#2f3135;--muted:#6f7480;--line:#dfe3e8;--yellow:#f3d250;--blue:#6a9eda;--blue-soft:#e9f3fc;--green:#48a868;--orange:#e59d3b;--red:#d95c5c;--paper:#fff;--bg:#eef1f4}
+    *{box-sizing:border-box} html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,'Helvetica Neue',sans-serif;font-size:11px;line-height:1.45}
+    button{font:inherit;cursor:pointer}.toolbar{position:sticky;top:0;z-index:5;background:#333;color:#fff;padding:10px 18px;display:flex;justify-content:center;gap:10px;box-shadow:0 2px 12px rgba(0,0,0,.15)}
+    .toolbar button{border:1px solid rgba(255,255,255,.22);border-radius:8px;padding:9px 14px;font-weight:800;font-size:11px;background:rgba(255,255,255,.06);color:#fff}.toolbar .primary{background:var(--yellow);color:#333;border-color:var(--yellow)}
+    .report{width:210mm;margin:14px auto;background:#fff;box-shadow:0 12px 35px rgba(0,0,0,.12)}
+    .page{width:210mm;min-height:297mm;padding:14mm 14mm 12mm;background:#fff;position:relative;page-break-after:always}.page:last-child{page-break-after:auto}
+    .header{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:2px solid #333;padding-bottom:9mm;margin-bottom:8mm}
+    .brand{display:flex;align-items:center;gap:10px}.mark{width:42px;height:42px;border-radius:10px;background:var(--yellow);display:grid;place-items:center;font-size:17px;font-weight:900}
+    .brand strong{display:block;font-size:18px;line-height:1.05}.brand span{display:block;color:#826a00;text-transform:uppercase;font-size:8px;font-weight:800;letter-spacing:.08em;margin-top:4px}
+    .meta{text-align:right}.meta .period{font-weight:800;font-size:11px}.meta .generated{color:var(--muted);font-size:8.5px;margin-top:4px}.badge{display:inline-block;background:#e3f5e9;color:#287c43;border:1px solid #b9dfc5;border-radius:999px;padding:4px 8px;font-size:7.5px;font-weight:800;margin-top:5px}
+    h1{font-size:25px;letter-spacing:-.03em;margin:0 0 4px}h2{font-size:15px;margin:0 0 3px}h3{font-size:11px;margin:0}.lead{color:var(--muted);margin:0 0 7mm;font-size:10px}
+    .kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:7mm}.kpi{border:1px solid var(--line);border-radius:10px;padding:11px 12px;min-height:70px;position:relative;overflow:hidden}.kpi:after{content:'';position:absolute;width:50px;height:50px;border-radius:50%;right:-15px;top:-15px;background:var(--blue-soft)}.kpi .label{font-size:7.5px;color:var(--muted);text-transform:uppercase;font-weight:800;letter-spacing:.05em}.kpi .value{font-size:22px;font-weight:900;margin-top:7px;line-height:1}.kpi .sub{font-size:7.7px;color:var(--muted);margin-top:6px}
+    .section{border:1px solid var(--line);border-radius:11px;padding:12px 13px;margin-bottom:6mm;break-inside:avoid}.section-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}.desc{font-size:8px;color:var(--muted);margin-top:2px}.pill{font-size:7.2px;font-weight:800;color:var(--muted);background:#f4f5f7;border-radius:999px;padding:4px 7px;white-space:nowrap}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:6mm}.scores{display:grid;gap:8px}.score-row{display:grid;grid-template-columns:32mm 1fr 12mm;gap:7px;align-items:center}.score-label{font-size:8px;font-weight:700}.track{height:7px;border-radius:999px;background:#edf0f3;overflow:hidden}.bar{height:100%;background:var(--blue);border-radius:inherit}.bar.warn{background:var(--orange)}.bar.bad{background:var(--red)}.score{text-align:right;font-size:8.5px;font-weight:900}
+    .insights{display:grid;gap:7px}.insight{border:1px solid var(--line);border-left:4px solid var(--orange);border-radius:8px;padding:8px 9px}.insight.bad{border-left-color:var(--red)}.insight.good{border-left-color:var(--green)}.insight strong{font-size:8.7px;display:block;margin-bottom:2px}.insight p{font-size:7.8px;color:var(--muted);margin:0;line-height:1.45}
+    .svg-wrap{height:58mm;width:100%;overflow:hidden}.svg-wrap.small{height:52mm}.bars{display:grid;gap:7px}.hbar{display:grid;grid-template-columns:31mm 1fr 14mm;gap:7px;align-items:center}.hbar .name{font-size:7.5px}.hbar .value{font-size:7.5px;font-weight:800;text-align:right}
+    table{width:100%;border-collapse:collapse}th,td{padding:7px 6px;border-top:1px solid var(--line);text-align:left;vertical-align:top;font-size:7.6px}th{text-transform:uppercase;color:var(--muted);font-size:6.8px;letter-spacing:.04em}.status{display:inline-block;padding:3px 5px;border-radius:999px;font-size:6.8px;font-weight:800}.status.bad{background:#fde5e5;color:#a83b3b}.status.good{background:#e3f5e9;color:#287c43}.status.neutral{background:#eef0f3;color:#666b74}
+    .method{font-size:7.6px;color:var(--muted);line-height:1.6}.method strong{color:var(--ink)}.footer{position:absolute;bottom:7mm;left:14mm;right:14mm;border-top:1px solid var(--line);padding-top:4mm;display:flex;justify-content:space-between;color:#92969e;font-size:6.8px}
+    .empty{padding:12px;border:1px dashed var(--line);border-radius:8px;color:var(--muted);font-size:8px}.error{width:210mm;margin:30px auto;background:#fff;border:1px solid #efbcbc;border-left:5px solid var(--red);padding:20px;border-radius:10px}.loading{padding:50px;text-align:center;color:var(--muted)}
+    @media(max-width:850px){.report,.page,.error{width:100%;min-height:auto}.report{margin:0;box-shadow:none}.page{padding:22px}.two{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.footer{position:static;margin-top:24px}.toolbar{position:static}}
+    @page{size:A4;margin:0}
+    @media print{body{background:#fff}.toolbar{display:none!important}.report{margin:0;box-shadow:none;width:210mm}.page{width:210mm;height:297mm;min-height:297mm;overflow:hidden}.page:last-child{page-break-after:auto}.no-print{display:none!important}}
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print"><button type="button" onclick="history.back()">Volver al panel</button><button class="primary" type="button" onclick="window.print()">Guardar como PDF</button></div>
+  <div id="loading" class="loading">Preparando reporte ejecutivo…</div>
+  <div id="error" class="error" hidden></div>
+  <main class="report" id="report" hidden>
+    <section class="page">
+      <header class="header">
+        <div class="brand"><div class="mark">LL</div><div><strong>Encuesta Satisfacción</strong><span>Reporte ejecutivo de experiencia</span></div></div>
+        <div class="meta"><div class="period" id="periodLabel">—</div><div class="generated" id="generatedAt">—</div><span class="badge">DATOS REALES · AIRTABLE</span></div>
+      </header>
+      <h1>Experiencia del cliente</h1>
+      <p class="lead">Resumen ejecutivo del periodo seleccionado para facilitar decisiones operativas y detectar oportunidades de mejora.</p>
+      <section class="kpis">
+        <article class="kpi"><div class="label">Respuestas analizadas</div><div class="value" id="rAnalyzed">—</div><div class="sub" id="rTotal">—</div></article>
+        <article class="kpi"><div class="label">Satisfacción promedio</div><div class="value" id="rSatisfaction">—</div><div class="sub">Promedio de las 7 áreas evaluadas</div></article>
+        <article class="kpi"><div class="label">NPS</div><div class="value" id="rNps">—</div><div class="sub" id="rNpsSub">Promotores menos detractores</div></article>
+        <article class="kpi"><div class="label">Visitas con problema</div><div class="value" id="rIssues">—</div><div class="sub" id="rIssuesSub">—</div></article>
+        <article class="kpi"><div class="label">Área más débil</div><div class="value" id="rWeak" style="font-size:15px;line-height:1.15">—</div><div class="sub" id="rWeakSub">—</div></article>
+        <article class="kpi"><div class="label">Histórico acumulado</div><div class="value" id="rHistory">—</div><div class="sub">Registros totales en Airtable</div></article>
+      </section>
+      <section class="two">
+        <article class="section"><div class="section-head"><div><h2>Qué requiere atención</h2><div class="desc">Principales señales del periodo</div></div></div><div class="insights" id="rAttention"></div></article>
+        <article class="section"><div class="section-head"><div><h2>Qué está funcionando</h2><div class="desc">Fortalezas que conviene mantener</div></div></div><div class="insights" id="rPositive"></div></article>
+      </section>
+      <section class="section"><div class="section-head"><div><h2>Calificación por área</h2><div class="desc">Comparativo de los atributos evaluados</div></div><span class="pill">ESCALA 1-5</span></div><div class="scores" id="rScores"></div></section>
+      <div class="footer"><span>Reporte de experiencia del cliente · Encuesta Satisfacción</span><span>Página 1 de 3</span></div>
+    </section>
+
+    <section class="page">
+      <header class="header"><div class="brand"><div class="mark">LL</div><div><strong>Análisis del periodo</strong><span>Comportamiento y distribución</span></div></div><div class="meta"><div class="period" id="periodLabel2">—</div></div></header>
+      <section class="section"><div class="section-head"><div><h2>Evolución de satisfacción</h2><div class="desc">Promedio general por fecha de visita</div></div><span class="pill">ESCALA 1-5</span></div><div class="svg-wrap" id="trendSvg"></div></section>
+      <section class="two">
+        <article class="section"><div class="section-head"><div><h2>Qué consumieron</h2><div class="desc">Porcentaje de encuestados por categoría</div></div></div><div class="bars" id="consumptionBars"></div></article>
+        <article class="section"><div class="section-head"><div><h2>Problemas reportados</h2><div class="desc">Incidencias seleccionadas por clientes</div></div><span class="pill" id="problemCount">—</span></div><div class="bars" id="problemBars"></div></article>
+      </section>
+      <section class="section"><div class="section-head"><div><h2>Lectura ejecutiva</h2><div class="desc">Cómo interpretar las cifras de esta página</div></div></div><div class="method" id="executiveReading"></div></section>
+      <div class="footer"><span>Reporte de experiencia del cliente · Encuesta Satisfacción</span><span>Página 2 de 3</span></div>
+    </section>
+
+    <section class="page">
+      <header class="header"><div class="brand"><div class="mark">LL</div><div><strong>Voz del cliente</strong><span>Comentarios y metodología</span></div></div><div class="meta"><div class="period" id="periodLabel3">—</div></div></header>
+      <section class="section"><div class="section-head"><div><h2>Comentarios destacados</h2><div class="desc">Opiniones recientes dentro del periodo seleccionado</div></div></div><table><thead><tr><th>Fecha</th><th>Horario</th><th>Comentario</th><th>NPS</th><th>Lectura</th></tr></thead><tbody id="comments"></tbody></table></section>
+      <section class="section"><div class="section-head"><div><h2>Metodología del reporte</h2><div class="desc">Criterios utilizados para construir los indicadores</div></div></div><div class="method">
+        <p><strong>Periodo:</strong> se utiliza <code>Fecha_Visita</code> para incluir únicamente las encuestas correspondientes al rango seleccionado.</p>
+        <p><strong>Satisfacción promedio:</strong> promedio de Atención, Sabor, Presentación, Tiempo de servicio, Limpieza, Ambiente y Calidad/Precio.</p>
+        <p><strong>NPS:</strong> porcentaje de promotores (9-10) menos porcentaje de detractores (0-6). Las respuestas 7-8 se consideran pasivas.</p>
+        <p><strong>Visitas con problema:</strong> porcentaje de respuestas con <code>Tuvo_Problema</code> marcado.</p>
+        <p><strong>Consumo:</strong> representa lo declarado por quienes contestaron la encuesta; no sustituye información de ventas o POS.</p>
+        <p><strong>Fuente:</strong> registros almacenados en Airtable a través del formulario público de satisfacción.</p>
+      </div></section>
+      <section class="section"><div class="section-head"><div><h2>Nota para la toma de decisiones</h2></div></div><div class="method">Este reporte resume señales de percepción del cliente. Conviene contrastar hallazgos con operación, ventas, personal y horarios antes de definir acciones correctivas.</div></section>
+      <div class="footer"><span>Reporte de experiencia del cliente · Encuesta Satisfacción</span><span>Página 3 de 3</span></div>
+    </section>
+  </main>
+<script>
+  const q=new URLSearchParams(location.search); const from=q.get('from'); const to=q.get('to'); const auto=q.get('autoprint')==='1';
+  const $=id=>document.getElementById(id); const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const signed=v=>v>0?`+${v}`:String(v); const parseIso=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+  const fmtDate=s=>new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short',year:'numeric'}).format(parseIso(s)).replace('.','');
+  const fmtShort=s=>new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short'}).format(parseIso(s)).replace('.','');
+  const periodText=()=>`${fmtDate(from)} - ${fmtDate(to)}`;
+  function insightHtml(items){return (items||[]).map(x=>`<div class="insight ${esc(x.tone||'')}"><strong>${esc(x.title)}</strong><p>${esc(x.text)}</p></div>`).join('')||'<div class="empty">Sin datos suficientes.</div>'}
+  function scoreHtml(scores){return (scores||[]).slice().sort((a,b)=>(b.value??-1)-(a.value??-1)).map(s=>{const v=s.value;const pct=v==null?0:Math.max(0,Math.min(100,v/5*100));const cls=v==null?'':v<3.5?'bad':v<4?'warn':'';return `<div class="score-row"><div class="score-label">${esc(s.label)}</div><div class="track"><div class="bar ${cls}" style="width:${pct}%"></div></div><div class="score">${v==null?'—':Number(v).toFixed(1)}</div></div>`}).join('')||'<div class="empty">Sin evaluaciones.</div>'}
+  function barList(labels,values,mode){if(!labels?.length)return '<div class="empty">Sin datos para este periodo.</div>';const max=mode==='percent'?100:Math.max(1,...values);return labels.map((label,i)=>{const val=Number(values[i]||0);const pct=Math.max(0,Math.min(100,val/max*100));return `<div class="hbar"><div class="name">${esc(label)}</div><div class="track"><div class="bar ${mode==='problem'?'warn':''}" style="width:${pct}%"></div></div><div class="value">${mode==='percent'?val.toFixed(1)+'%':val}</div></div>`}).join('')}
+  function trendSvg(trend){const vals=trend?.values||[], labels=trend?.labels||[]; if(!labels.length)return '<div class="empty">Sin datos de evolución.</div>'; const W=720,H=190,L=42,R=16,T=12,B=34,iw=W-L-R,ih=H-T-B; const xs=labels.map((_,i)=>L+(labels.length===1?iw/2:i*iw/(labels.length-1))); const y=v=>T+(5-v)/4*ih; let grid=''; for(let n=1;n<=5;n++){const yy=y(n);grid+=`<line x1="${L}" y1="${yy}" x2="${W-R}" y2="${yy}" stroke="#e7ebef"/><text x="${L-10}" y="${yy+3}" text-anchor="end" font-size="8" fill="#7b8089">${n}</text>`} let segments=[],current=[]; vals.forEach((v,i)=>{if(v==null){if(current.length>1)segments.push(current);current=[]}else current.push([xs[i],y(v)])}); if(current.length>1)segments.push(current); let lines=segments.map(seg=>`<polyline points="${seg.map(p=>p.join(',')).join(' ')}" fill="none" stroke="#6a9eda" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`).join(''); let pts=vals.map((v,i)=>v==null?'':`<circle cx="${xs[i]}" cy="${y(v)}" r="3.2" fill="#fff" stroke="#6a9eda" stroke-width="2"/>`).join(''); let xlabels=labels.map((s,i)=>`<text x="${xs[i]}" y="${H-11}" text-anchor="middle" font-size="7" fill="#7b8089">${esc(trend.granularity==='week'?'Sem. '+fmtShort(s):fmtShort(s))}</text>`).join(''); return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" aria-label="Evolución de satisfacción">${grid}${lines}${pts}${xlabels}</svg>`}
+  function commentsHtml(items){return (items||[]).slice(0,7).map(x=>`<tr><td>${esc(fmtShort(x.date))}</td><td>${esc(x.horario||'—')}</td><td>“${esc(x.comment)}”</td><td>${x.nps==null?'—':esc(x.nps)}</td><td><span class="status ${esc(x.quick?.tone||'neutral')}">${esc(x.quick?.label||'Neutral')}</span></td></tr>`).join('')||'<tr><td colspan="5">No hay comentarios escritos en este periodo.</td></tr>'}
+  function reading(m,d){const weak=m.weakArea?.label&&m.weakArea?.value!=null?`${m.weakArea.label} es el área con menor promedio (${Number(m.weakArea.value).toFixed(1)}/5).`:''; const probs=m.problems?.labels?.length?`La incidencia más repetida es ${m.problems.labels[0]} con ${m.problems.counts[0]} menciones.`:'No se registraron tipos de problema en el periodo.'; const sat=m.satisfaction!=null?`La satisfacción general del periodo es ${Number(m.satisfaction).toFixed(1)}/5.`:''; return `<p>${esc(sat)} ${esc(weak)}</p><p>${esc(probs)} El análisis utiliza ${d.analyzed} respuestas correspondientes al periodo seleccionado.</p>`}
+  async function init(){
+    if(!from||!to){$('loading').hidden=true;$('error').hidden=false;$('error').textContent='Falta el rango de fechas del reporte.';return}
+    try{
+      const res=await fetch(`/.netlify/functions/dashboard-data?${new URLSearchParams({from,to})}`,{headers:{Accept:'application/json'},cache:'no-store'}); const d=await res.json(); if(!res.ok||!d.success)throw new Error(d.error||`HTTP ${res.status}`); const m=d.metrics||{};
+      const p=periodText(); ['periodLabel','periodLabel2','periodLabel3'].forEach(id=>$(id).textContent=p); $('generatedAt').textContent=`Generado: ${new Intl.DateTimeFormat('es-MX',{dateStyle:'medium',timeStyle:'short'}).format(new Date())}`;
+      document.title=`Reporte_Encuesta_${from}_a_${to}`;
+      $('rAnalyzed').textContent=Number(d.analyzed||0).toLocaleString('es-MX'); $('rTotal').textContent=`De ${Number(d.total||0).toLocaleString('es-MX')} respuestas históricas`;
+      $('rSatisfaction').innerHTML=m.satisfaction==null?'—':`${Number(m.satisfaction).toFixed(1)}<span style="font-size:9px;color:#737782"> / 5</span>`;
+      $('rNps').textContent=m.nps==null?'—':signed(m.nps); const pn=d.previous?.nps; $('rNpsSub').textContent=(m.nps!=null&&pn!=null)?`${signed(m.nps-pn)} pts vs. periodo anterior`:'Sin comparación suficiente';
+      $('rIssues').textContent=m.issueRate==null?'—':`${Number(m.issueRate).toFixed(1)}%`; $('rIssuesSub').textContent=`${m.issueCount||0} de ${d.analyzed||0} respuestas`;
+      $('rWeak').textContent=m.weakArea?.label||'—'; $('rWeakSub').textContent=m.weakArea?.value!=null?`${Number(m.weakArea.value).toFixed(1)} / 5 · menor promedio`:'Sin evaluaciones'; $('rHistory').textContent=Number(d.total||0).toLocaleString('es-MX');
+      $('rAttention').innerHTML=insightHtml(m.insights?.attention); $('rPositive').innerHTML=insightHtml(m.insights?.positive); $('rScores').innerHTML=scoreHtml(m.areaScores);
+      $('trendSvg').innerHTML=trendSvg(m.trend); $('consumptionBars').innerHTML=barList(m.consumption?.labels,m.consumption?.percentages,'percent');
+      const pl=(m.problems?.labels||[]).map(x=>x==='Orden tardó demasiado'?'Espera':x==='Producto no disponible'?'Sin producto':x); $('problemBars').innerHTML=barList(pl,m.problems?.counts,'problem'); $('problemCount').textContent=`${m.issueCount||0} CON PROBLEMA`;
+      $('executiveReading').innerHTML=reading(m,d); $('comments').innerHTML=commentsHtml(m.comments);
+      $('loading').hidden=true;$('report').hidden=false;
+      if(auto)setTimeout(()=>window.print(),450);
+    }catch(e){console.error(e);$('loading').hidden=true;$('error').hidden=false;$('error').textContent=`No fue posible generar el reporte: ${e.message}`}
+  }
+  init();
+</script>
+</body>
+</html>

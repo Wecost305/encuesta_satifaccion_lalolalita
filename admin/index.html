@@ -317,7 +317,7 @@
       </div>
       <div class="top-actions">
         <button class="ghost-btn" type="button" onclick="location.href='/'">Ver encuesta</button>
-        <button class="primary-btn" type="button" onclick="window.print()">Exportar reporte</button>
+        <button class="primary-btn" id="exportReportBtn" type="button">Exportar reporte</button>
       </div>
     </div>
   </header>
@@ -448,7 +448,7 @@
       </div>
     </section>
 
-    <p class="footer-note">Fase 3.2 · Dashboard conectado a Airtable. Todos los indicadores, gráficas, comentarios y conclusiones se calculan con las respuestas incluidas en el periodo seleccionado.</p>
+    <p class="footer-note">Fase 4 · Dashboard conectado a Airtable con reporte PDF dinámico. Todos los indicadores, gráficas, comentarios y conclusiones se calculan con las respuestas incluidas en el periodo seleccionado.</p>
   </main>
 
   <script>
@@ -588,11 +588,25 @@
     const customDates=document.getElementById('customDates');
     periodo.addEventListener('change',()=>customDates.classList.toggle('active',periodo.value==='custom'));
 
+    let currentRange = null;
+
+    function openReport(){
+      try {
+        const range = currentRange || getSelectedDateRange();
+        const params = new URLSearchParams({ from: range.from, to: range.to, autoprint: '1' });
+        window.open(`/admin/reporte/?${params.toString()}`, '_blank', 'noopener');
+      } catch (error) {
+        console.error(error);
+        alert(error.message || 'No fue posible preparar el reporte.');
+      }
+    }
+
     async function applySelectedPeriod(){
       try{
         const range=getSelectedDateRange();
         document.getElementById('periodNote').textContent=formatRangeLabel(range.from,range.to);
         await loadDashboard(range);
+        currentRange = range;
       }catch(error){
         console.error(error);
         const status=document.getElementById('dataStatus');
@@ -601,6 +615,7 @@
       }
     }
     document.getElementById('applyFilter').addEventListener('click',applySelectedPeriod);
+    document.getElementById('exportReportBtn').addEventListener('click',openReport);
     applySelectedPeriod();
   </script>
 </body>

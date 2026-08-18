@@ -328,7 +328,7 @@
         <h1>Resumen de experiencia</h1>
         <p>Indicadores de satisfacción y señales para tomar decisiones operativas.</p>
       </div>
-      <span class="demo-badge">DATOS DE DEMOSTRACIÓN</span>
+      <span class="demo-badge" id="dataStatus">CONECTANDO AIRTABLE…</span>
     </section>
 
     <section class="filters" aria-label="Filtros del reporte">
@@ -358,8 +358,8 @@
     <section class="kpis">
       <article class="card kpi">
         <div class="label">Respuestas</div>
-        <div class="value" id="kpiResponses">86</div>
-        <div class="sub"><span class="trend-up">▲ 12%</span> vs. periodo anterior</div>
+        <div class="value" id="kpiResponses">…</div>
+        <div class="sub" id="kpiResponsesSub">Leyendo registros reales de Airtable</div>
       </article>
       <article class="card kpi">
         <div class="label">Satisfacción promedio</div>
@@ -457,10 +457,49 @@
       </div>
     </section>
 
-    <p class="footer-note">Vista de demostración · En la siguiente fase los indicadores se calcularán con datos reales de Airtable.</p>
+    <p class="footer-note">Fase 3.2 · La tarjeta Respuestas ya usa Airtable real. Los demás indicadores continúan con datos de demostración hasta la siguiente integración.</p>
   </main>
 
   <script>
+    let realTotalResponses = null;
+
+    async function loadRealAirtableCount() {
+      const status = document.getElementById('dataStatus');
+      const value = document.getElementById('kpiResponses');
+      const sub = document.getElementById('kpiResponsesSub');
+
+      try {
+        const response = await fetch('/.netlify/functions/dashboard-data', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          cache: 'no-store'
+        });
+
+        let payload = {};
+        try { payload = await response.json(); } catch (_) {}
+
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error || `HTTP ${response.status}`);
+        }
+
+        realTotalResponses = payload.total;
+        value.textContent = realTotalResponses.toLocaleString('es-MX');
+        sub.textContent = 'Total actual de registros en Airtable · sin filtro de fecha en esta etapa';
+        status.textContent = 'AIRTABLE CONECTADO · DEMÁS DATOS DEMO';
+        status.style.background = '#e3f5e9';
+        status.style.color = '#287c43';
+        status.style.borderColor = '#b9dfc5';
+      } catch (error) {
+        console.error('No se pudo leer Airtable:', error);
+        value.textContent = '—';
+        sub.textContent = 'No se pudo consultar Airtable. Revisa variables y logs de Functions.';
+        status.textContent = 'ERROR DE CONEXIÓN AIRTABLE';
+        status.style.background = '#fde5e5';
+        status.style.color = '#a83b3b';
+        status.style.borderColor = '#efbcbc';
+      }
+    }
+
     const dashboardSets = {
       '7': {
         note: 'Periodo mostrado: 11–17 agosto 2026',
@@ -507,7 +546,7 @@
 
     const consumptionChart = new Chart(document.getElementById('consumptionChart'), {
       type: 'bar',
-      data: { labels: ['Platillo','Bebidas','Entrada','Postre','Cerveza','Vino','Coctelería'], datasets:[{ data:dashboardSets['7'].consumption, backgroundColor:'#6a9eda', borderRadius:6 }] },
+      data: { labels: ['Platillo principal','Bebidas sin alcohol','Entrada','Postre','Cerveza','Vino','Coctelería'], datasets:[{ data:dashboardSets['7'].consumption, backgroundColor:'#6a9eda', borderRadius:6 }] },
       options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw}% de encuestados`}}}, scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:gridColor}},y:{grid:{display:false}}} }
     });
 
@@ -518,6 +557,7 @@
     });
 
     renderScores(dashboardSets['7'].scores);
+    loadRealAirtableCount();
 
     const periodo = document.getElementById('periodo');
     const customDates = document.getElementById('customDates');
@@ -534,7 +574,7 @@
       } else {
         document.getElementById('periodNote').textContent = data.note;
       }
-      document.getElementById('kpiResponses').textContent = data.responses;
+      document.getElementById('kpiResponses').textContent = realTotalResponses !== null ? realTotalResponses.toLocaleString('es-MX') : '…';
       document.getElementById('kpiSatisfaction').innerHTML = `${data.satisfaction}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
       document.getElementById('kpiNps').textContent = data.nps;
       document.getElementById('kpiIssues').textContent = data.issues;

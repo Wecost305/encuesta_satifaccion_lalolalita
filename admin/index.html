@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Panel de Administración - Encuesta Satisfacción</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #f4f5f7;
+      --surface: #ffffff;
+      --surface-2: #f8f9fb;
+      --ink: #2f3135;
+      --muted: #737782;
+      --line: #e3e5e9;
+      --yellow: #f3d250;
+      --blue: #a2d2ff;
+      --blue-strong: #6a9eda;
+      --green: #48a868;
+      --orange: #e59d3b;
+      --red: #d95c5c;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(33, 38, 45, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      background: #333;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      box-shadow: 0 2px 14px rgba(0,0,0,.12);
+    }
+
+    .topbar-inner {
+      max-width: 1480px;
+      margin: auto;
+      min-height: 72px;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      background: var(--yellow);
+      color: #333;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .brand-text strong {
+      display: block;
+      font-size: 17px;
+      line-height: 1.1;
+    }
+
+    .brand-text span {
+      color: var(--yellow);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .top-actions { display: flex; gap: 9px; align-items: center; }
+    .ghost-btn, .primary-btn {
+      border-radius: 9px;
+      border: 1px solid rgba(255,255,255,.22);
+      padding: 9px 13px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .ghost-btn { color: #fff; background: rgba(255,255,255,.06); }
+    .primary-btn { background: var(--yellow); color: #333; border-color: var(--yellow); }
+
+    .layout {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px 24px 50px;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-end;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 6px;
+      font-size: clamp(25px, 3vw, 38px);
+      letter-spacing: -.03em;
+    }
+
+    .hero p { margin: 0; color: var(--muted); font-size: 13px; }
+    .demo-badge {
+      background: #fff4bc;
+      color: #765d00;
+      border: 1px solid #ead168;
+      border-radius: 999px;
+      padding: 7px 12px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .filters {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 15px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 11px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field label { font-size: 10px; color: var(--muted); font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+    .field select, .field input {
+      height: 41px;
+      border: 1px solid #d6d9df;
+      border-radius: 9px;
+      background: #fff;
+      padding: 0 11px;
+      color: var(--ink);
+      min-width: 160px;
+      outline: none;
+    }
+    .field select:focus, .field input:focus { border-color: var(--blue-strong); box-shadow: 0 0 0 3px rgba(106,158,218,.12); }
+    .filter-btn {
+      height: 41px;
+      border: 0;
+      border-radius: 9px;
+      padding: 0 17px;
+      background: #333;
+      color: #fff;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .period-note { margin-left: auto; color: var(--muted); font-size: 11px; padding-bottom: 5px; }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0,1fr));
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .kpi { padding: 18px; min-height: 130px; position: relative; overflow: hidden; }
+    .kpi::after {
+      content: '';
+      position: absolute;
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      right: -20px; top: -18px;
+      background: rgba(162,210,255,.16);
+    }
+    .kpi .label { color: var(--muted); font-size: 10px; text-transform: uppercase; font-weight: 800; letter-spacing: .05em; }
+    .kpi .value { font-weight: 900; font-size: 29px; margin-top: 12px; line-height: 1; }
+    .kpi .sub { margin-top: 10px; font-size: 10px; color: var(--muted); line-height: 1.35; }
+    .trend-up { color: var(--green); font-weight: 800; }
+    .trend-down { color: var(--red); font-weight: 800; }
+
+    .grid-main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(320px, .85fr);
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .panel { padding: 20px; min-width: 0; }
+    .panel-head { display: flex; justify-content: space-between; align-items: start; gap: 12px; margin-bottom: 18px; }
+    .panel h2 { margin: 0; font-size: 16px; }
+    .panel .desc { font-size: 10px; color: var(--muted); margin-top: 5px; }
+    .pill { padding: 5px 9px; border-radius: 999px; font-size: 9px; font-weight: 800; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+    .chart-wrap { position: relative; height: 300px; }
+    .chart-wrap.small { height: 265px; }
+
+    .score-list { display: grid; gap: 13px; }
+    .score-row { display: grid; grid-template-columns: 125px 1fr 38px; gap: 10px; align-items: center; }
+    .score-label { font-size: 11px; font-weight: 700; }
+    .track { height: 9px; border-radius: 999px; background: #edf0f3; overflow: hidden; }
+    .bar { height: 100%; border-radius: inherit; background: var(--blue-strong); }
+    .bar.warn { background: var(--orange); }
+    .bar.bad { background: var(--red); }
+    .score { font-size: 11px; font-weight: 900; text-align: right; }
+
+    .grid-secondary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .insights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+
+    .insight-panel { padding: 20px; }
+    .insight-list { display: grid; gap: 11px; margin-top: 15px; }
+    .insight {
+      border: 1px solid var(--line);
+      border-left-width: 4px;
+      border-radius: 10px;
+      padding: 13px 14px;
+      background: #fff;
+    }
+    .insight.bad { border-left-color: var(--red); }
+    .insight.warn { border-left-color: var(--orange); }
+    .insight.good { border-left-color: var(--green); }
+    .insight strong { display: block; font-size: 12px; margin-bottom: 4px; }
+    .insight p { margin: 0; color: var(--muted); font-size: 10.5px; line-height: 1.55; }
+
+    .comments { padding: 20px; }
+    .comments-table { width: 100%; border-collapse: collapse; margin-top: 13px; }
+    .comments-table th, .comments-table td { padding: 12px 10px; border-top: 1px solid var(--line); text-align: left; font-size: 10.5px; vertical-align: top; }
+    .comments-table th { color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 9px; }
+    .status { display: inline-block; padding: 4px 7px; border-radius: 999px; font-size: 9px; font-weight: 800; }
+    .status.bad { background: #fde5e5; color: #a83b3b; }
+    .status.good { background: #e3f5e9; color: #287c43; }
+    .status.neutral { background: #eef0f3; color: #666b74; }
+
+    .footer-note { text-align: center; color: #9a9da4; font-size: 10px; margin-top: 22px; }
+    .custom-dates { display: none; gap: 11px; }
+    .custom-dates.active { display: contents; }
+
+    @media (max-width: 1100px) {
+      .kpis { grid-template-columns: repeat(3, 1fr); }
+      .grid-main { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .topbar-inner, .layout { padding-left: 14px; padding-right: 14px; }
+      .top-actions .ghost-btn { display: none; }
+      .hero { align-items: start; flex-direction: column; }
+      .filters { align-items: stretch; }
+      .field, .field select, .field input { width: 100%; min-width: 0; }
+      .period-note { margin-left: 0; width: 100%; }
+      .kpis { grid-template-columns: 1fr 1fr; }
+      .grid-secondary, .insights { grid-template-columns: 1fr; }
+      .score-row { grid-template-columns: 110px 1fr 34px; }
+      .comments-table th:nth-child(2), .comments-table td:nth-child(2) { display: none; }
+    }
+
+    @media (max-width: 470px) {
+      .kpis { grid-template-columns: 1fr; }
+      .brand-text strong { font-size: 14px; }
+      .panel, .insight-panel, .comments { padding: 16px; }
+      .chart-wrap { height: 250px; }
+    }
+
+    @media print {
+      .topbar, .filters, .footer-note { display: none !important; }
+      body { background: #fff; }
+      .layout { max-width: none; padding: 0; }
+      .card { box-shadow: none; break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-mark">LL</div>
+        <div class="brand-text">
+          <strong>Encuesta Satisfacción</strong>
+          <span>Panel administrativo</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <button class="ghost-btn" type="button" onclick="location.href='/'">Ver encuesta</button>
+        <button class="primary-btn" type="button" onclick="window.print()">Exportar reporte</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div>
+        <h1>Resumen de experiencia</h1>
+        <p>Indicadores de satisfacción y señales para tomar decisiones operativas.</p>
+      </div>
+      <span class="demo-badge">DATOS DE DEMOSTRACIÓN</span>
+    </section>
+
+    <section class="filters" aria-label="Filtros del reporte">
+      <div class="field">
+        <label for="periodo">Periodo</label>
+        <select id="periodo">
+          <option value="7">Últimos 7 días</option>
+          <option value="week">Semana anterior</option>
+          <option value="30">Últimos 30 días</option>
+          <option value="custom">Rango personalizado</option>
+        </select>
+      </div>
+      <div class="custom-dates" id="customDates">
+        <div class="field">
+          <label for="desde">Desde</label>
+          <input id="desde" type="date">
+        </div>
+        <div class="field">
+          <label for="hasta">Hasta</label>
+          <input id="hasta" type="date">
+        </div>
+      </div>
+      <button class="filter-btn" id="applyFilter" type="button">Generar análisis</button>
+      <div class="period-note" id="periodNote">Periodo mostrado: 11–17 agosto 2026</div>
+    </section>
+
+    <section class="kpis">
+      <article class="card kpi">
+        <div class="label">Respuestas</div>
+        <div class="value" id="kpiResponses">86</div>
+        <div class="sub"><span class="trend-up">▲ 12%</span> vs. periodo anterior</div>
+      </article>
+      <article class="card kpi">
+        <div class="label">Satisfacción promedio</div>
+        <div class="value" id="kpiSatisfaction">4.1<span style="font-size:13px;color:var(--muted)"> / 5</span></div>
+        <div class="sub">Promedio de las 7 áreas evaluadas</div>
+      </article>
+      <article class="card kpi">
+        <div class="label">NPS</div>
+        <div class="value" id="kpiNps">+48</div>
+        <div class="sub"><span class="trend-up">▲ 6 pts</span> vs. periodo anterior</div>
+      </article>
+      <article class="card kpi">
+        <div class="label">Visitas con problema</div>
+        <div class="value" id="kpiIssues">17%</div>
+        <div class="sub">15 de 86 respuestas reportaron incidencia</div>
+      </article>
+      <article class="card kpi">
+        <div class="label">Área más débil</div>
+        <div class="value" style="font-size:20px" id="kpiWeak">Tiempo servicio</div>
+        <div class="sub"><span class="trend-down">3.2 / 5</span> · requiere seguimiento</div>
+      </article>
+    </section>
+
+    <section class="grid-main">
+      <article class="card panel">
+        <div class="panel-head">
+          <div><h2>Evolución de satisfacción</h2><div class="desc">Promedio general obtenido por día</div></div>
+          <span class="pill">Escala 1–5</span>
+        </div>
+        <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+      </article>
+
+      <article class="card panel">
+        <div class="panel-head">
+          <div><h2>Calificación por área</h2><div class="desc">Identifica fortalezas y puntos de atención</div></div>
+        </div>
+        <div class="score-list" id="scoreList"></div>
+      </article>
+    </section>
+
+    <section class="grid-secondary">
+      <article class="card panel">
+        <div class="panel-head">
+          <div><h2>Qué consumieron</h2><div class="desc">Porcentaje de encuestados que seleccionó cada categoría</div></div>
+          <span class="pill">Selección múltiple</span>
+        </div>
+        <div class="chart-wrap small"><canvas id="consumptionChart"></canvas></div>
+      </article>
+
+      <article class="card panel">
+        <div class="panel-head">
+          <div><h2>Problemas reportados</h2><div class="desc">Incidencias seleccionadas por los clientes</div></div>
+          <span class="pill">15 respuestas con problema</span>
+        </div>
+        <div class="chart-wrap small"><canvas id="problemsChart"></canvas></div>
+      </article>
+    </section>
+
+    <section class="insights">
+      <article class="card insight-panel">
+        <div class="panel-head"><div><h2>Qué requiere atención</h2><div class="desc">Conclusiones directas para el responsable del negocio</div></div></div>
+        <div class="insight-list">
+          <div class="insight bad"><strong>Tiempo de servicio es el punto más débil</strong><p>Obtiene 3.2/5 y concentra varias menciones de espera. Conviene revisar capacidad de atención durante los horarios de mayor carga.</p></div>
+          <div class="insight warn"><strong>Viernes y sábado bajan el promedio</strong><p>La satisfacción cae por debajo de 4.0 en ambos días. El patrón sugiere revisar personal, tiempos y flujo operativo durante el fin de semana.</p></div>
+          <div class="insight warn"><strong>Calidad-precio necesita seguimiento</strong><p>Con 3.6/5 es la segunda evaluación más baja. Conviene revisar comentarios relacionados con porciones, precios y expectativa del cliente.</p></div>
+        </div>
+      </article>
+
+      <article class="card insight-panel">
+        <div class="panel-head"><div><h2>Qué está funcionando</h2><div class="desc">Fortalezas que conviene mantener</div></div></div>
+        <div class="insight-list">
+          <div class="insight good"><strong>El sabor lidera la experiencia</strong><p>Con 4.7/5 es el atributo mejor evaluado y se mantiene estable durante toda la semana.</p></div>
+          <div class="insight good"><strong>La atención también destaca</strong><p>El personal obtiene 4.5/5. Esta fortaleza puede ayudar a recuperar experiencias cuando existen retrasos operativos.</p></div>
+          <div class="insight good"><strong>NPS positivo</strong><p>El NPS de +48 indica que hay más promotores que detractores. El objetivo será elevarlo corrigiendo los principales puntos de fricción.</p></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card comments">
+      <div class="panel-head">
+        <div><h2>Comentarios recientes</h2><div class="desc">Muestra de opiniones que ayudan a interpretar las métricas</div></div>
+        <span class="pill">Últimos 7 días</span>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="comments-table">
+          <thead><tr><th>Fecha</th><th>Horario</th><th>Comentario</th><th>NPS</th><th>Lectura rápida</th></tr></thead>
+          <tbody>
+            <tr><td>17 ago</td><td>Noche / Bar</td><td>“Muy buen sabor, pero tardaron bastante en traer la comida.”</td><td>7</td><td><span class="status bad">Tiempo</span></td></tr>
+            <tr><td>16 ago</td><td>Comida</td><td>“Todo excelente, especialmente la atención del mesero.”</td><td>10</td><td><span class="status good">Positivo</span></td></tr>
+            <tr><td>15 ago</td><td>Cena</td><td>“La comida estuvo bien pero sentí alto el precio para la porción.”</td><td>6</td><td><span class="status bad">Precio</span></td></tr>
+            <tr><td>14 ago</td><td>Desayuno</td><td>“Lugar agradable y limpio. Regresaría.”</td><td>9</td><td><span class="status good">Positivo</span></td></tr>
+            <tr><td>13 ago</td><td>Comida</td><td>“Experiencia normal, sin ningún problema.”</td><td>8</td><td><span class="status neutral">Neutral</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <p class="footer-note">Vista de demostración · En la siguiente fase los indicadores se calcularán con datos reales de Airtable.</p>
+  </main>
+
+  <script>
+    const dashboardSets = {
+      '7': {
+        note: 'Periodo mostrado: 11–17 agosto 2026',
+        responses: 86,
+        satisfaction: '4.1', nps: '+48', issues: '17%', weak: 'Tiempo servicio',
+        trend: [4.3,4.4,4.1,4.2,3.8,3.7,4.0],
+        days: ['Lun 11','Mar 12','Mié 13','Jue 14','Vie 15','Sáb 16','Dom 17'],
+        scores: [['Sabor',4.7],['Atención',4.5],['Limpieza',4.3],['Presentación',4.1],['Ambiente',3.9],['Calidad / Precio',3.6],['Tiempo servicio',3.2]],
+        consumption: [62,51,34,47,29,14,22],
+        problems: [11,8,6,4,3,2]
+      },
+      'week': {
+        note: 'Periodo mostrado: 4–10 agosto 2026', responses: 77, satisfaction: '4.0', nps: '+42', issues: '19%', weak: 'Tiempo servicio',
+        trend: [4.1,4.0,4.3,4.0,3.7,3.6,4.1], days: ['Lun 4','Mar 5','Mié 6','Jue 7','Vie 8','Sáb 9','Dom 10'],
+        scores: [['Sabor',4.6],['Atención',4.4],['Limpieza',4.2],['Presentación',4.0],['Ambiente',3.8],['Calidad / Precio',3.5],['Tiempo servicio',3.1]],
+        consumption: [58,49,30,42,25,12,19], problems: [12,7,5,5,3,2]
+      },
+      '30': {
+        note: 'Periodo mostrado: últimos 30 días', responses: 341, satisfaction: '4.1', nps: '+45', issues: '18%', weak: 'Tiempo servicio',
+        trend: [4.0,4.1,4.2,4.0,4.1,4.2,4.1], days: ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Actual'],
+        scores: [['Sabor',4.6],['Atención',4.5],['Limpieza',4.3],['Presentación',4.1],['Ambiente',3.9],['Calidad / Precio',3.6],['Tiempo servicio',3.3]],
+        consumption: [64,53,36,45,27,16,24], problems: [39,26,18,15,10,7]
+      }
+    };
+
+    const scoreList = document.getElementById('scoreList');
+    function renderScores(scores) {
+      scoreList.innerHTML = scores.map(([label,value]) => {
+        const pct = Math.max(0, Math.min(100, value / 5 * 100));
+        const cls = value < 3.5 ? 'bad' : value < 4 ? 'warn' : '';
+        return `<div class="score-row"><div class="score-label">${label}</div><div class="track"><div class="bar ${cls}" style="width:${pct}%"></div></div><div class="score">${value.toFixed(1)}</div></div>`;
+      }).join('');
+    }
+
+    Chart.defaults.font.family = 'Montserrat';
+    Chart.defaults.color = '#737782';
+    const gridColor = '#edf0f3';
+
+    const trendChart = new Chart(document.getElementById('trendChart'), {
+      type: 'line',
+      data: { labels: dashboardSets['7'].days, datasets: [{ label: 'Satisfacción', data: dashboardSets['7'].trend, borderColor: '#6a9eda', backgroundColor: 'rgba(162,210,255,.22)', fill: true, tension: .35, pointRadius: 4, pointHoverRadius: 6 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { min:1, max:5, ticks:{ stepSize:1 }, grid:{ color:gridColor } }, x:{ grid:{ display:false } } } }
+    });
+
+    const consumptionChart = new Chart(document.getElementById('consumptionChart'), {
+      type: 'bar',
+      data: { labels: ['Platillo','Bebidas','Entrada','Postre','Cerveza','Vino','Coctelería'], datasets:[{ data:dashboardSets['7'].consumption, backgroundColor:'#6a9eda', borderRadius:6 }] },
+      options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw}% de encuestados`}}}, scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:gridColor}},y:{grid:{display:false}}} }
+    });
+
+    const problemsChart = new Chart(document.getElementById('problemsChart'), {
+      type:'bar',
+      data:{ labels:['Espera','Limpieza','Alimentos fríos','Atención','Cuenta','Sin producto'], datasets:[{data:dashboardSets['7'].problems, backgroundColor:'#e59d3b', borderRadius:6}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:gridColor}},x:{grid:{display:false}}}}
+    });
+
+    renderScores(dashboardSets['7'].scores);
+
+    const periodo = document.getElementById('periodo');
+    const customDates = document.getElementById('customDates');
+    periodo.addEventListener('change', () => customDates.classList.toggle('active', periodo.value === 'custom'));
+
+    document.getElementById('applyFilter').addEventListener('click', () => {
+      let key = periodo.value;
+      let data = dashboardSets[key] || dashboardSets['7'];
+      if (key === 'custom') {
+        const desde = document.getElementById('desde').value;
+        const hasta = document.getElementById('hasta').value;
+        data = dashboardSets['7'];
+        document.getElementById('periodNote').textContent = desde && hasta ? `Periodo mostrado: ${desde} → ${hasta} (demo)` : 'Selecciona ambas fechas';
+      } else {
+        document.getElementById('periodNote').textContent = data.note;
+      }
+      document.getElementById('kpiResponses').textContent = data.responses;
+      document.getElementById('kpiSatisfaction').innerHTML = `${data.satisfaction}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
+      document.getElementById('kpiNps').textContent = data.nps;
+      document.getElementById('kpiIssues').textContent = data.issues;
+      document.getElementById('kpiWeak').textContent = data.weak;
+      renderScores(data.scores);
+      trendChart.data.labels = data.days; trendChart.data.datasets[0].data = data.trend; trendChart.update();
+      consumptionChart.data.datasets[0].data = data.consumption; consumptionChart.update();
+      problemsChart.data.datasets[0].data = data.problems; problemsChart.update();
+    });
+  </script>
+</body>
+</html>

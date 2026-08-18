@@ -1,0 +1,15 @@
+LALO LALITA - V4.4 REPORTE PDF DINAMICO
+
+Novedades:
+- El boton Exportar reporte del /admin abre /admin/reporte/ con el rango actualmente analizado.
+- El reporte vuelve a consultar dashboard-data.js para usar datos reales de Airtable.
+- Diseno A4 de 3 paginas: resumen ejecutivo, graficas/distribuciones y comentarios/metodologia.
+- El titulo de la pagina incluye el rango para ayudar a nombrar el archivo PDF.
+- Con autoprint=1 se abre automaticamente el dialogo de impresion; elegir Guardar como PDF.
+- No se requieren variables de entorno nuevas.
+
+Flujo:
+/admin -> seleccionar periodo -> Generar analisis -> Exportar reporte -> Guardar como PDF.
+
+Nota:
+La generacion automatica y envio por correo sin intervencion del navegador se implementara en la siguiente fase con n8n/servicio de renderizado.

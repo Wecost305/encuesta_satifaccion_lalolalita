@@ -181,11 +181,13 @@ function calculateMetrics(records, from, to) {
       else extraProblems[item] = (extraProblems[item] || 0) + 1;
     }
   }
-  const problemLabels = [...PROBLEM_ORDER, ...Object.keys(extraProblems).sort()]
-    .filter(label => (problemCounts[label] ?? extraProblems[label] ?? 0) > 0);
+  const problemPairs = [...PROBLEM_ORDER, ...Object.keys(extraProblems).sort()]
+    .map(label => [label, problemCounts[label] ?? extraProblems[label] ?? 0])
+    .filter(([, count]) => count > 0)
+    .sort((a, b) => b[1] - a[1]);
   const problems = {
-    labels: problemLabels,
-    counts: problemLabels.map(label => problemCounts[label] ?? extraProblems[label] ?? 0)
+    labels: problemPairs.map(([label]) => label),
+    counts: problemPairs.map(([, count]) => count)
   };
 
   const trend = buildTrend(records, from, to);
@@ -318,8 +320,7 @@ function buildInsights(ctx) {
   }
 
   if (ctx.problems.labels.length) {
-    const pairs = ctx.problems.labels.map((label, i) => [label, ctx.problems.counts[i]]).sort((a,b) => b[1] - a[1]);
-    const [label, count] = pairs[0];
+    const [label, count] = [ctx.problems.labels[0], ctx.problems.counts[0]];
     attention.push({
       tone: count >= Math.max(3, ctx.issueCount * 0.4) ? 'bad' : 'warn',
       title: `${label} es la incidencia más repetida`,
@@ -332,10 +333,15 @@ function buildInsights(ctx) {
     .filter(x => x.value !== null && x.count > 0)
     .sort((a,b) => a.value - b.value)[0];
   if (worstTrend && ctx.trend.labels.length > 1) {
+    const isDay = ctx.trend.granularity === 'day';
+    const periodName = isDay ? `El día ${shortDateEs(worstTrend.label)}` : `La semana que inicia ${shortDateEs(worstTrend.label)}`;
+    const sampleText = worstTrend.count === 1
+      ? 'Se basa en 1 respuesta; es una muestra reducida y conviene interpretarla con precaución.'
+      : `Se basa en ${worstTrend.count} respuestas. Conviene compararlo con horarios, personal y carga operativa.`;
     attention.push({
       tone: worstTrend.value < 3.5 ? 'bad' : 'warn',
-      title: `El periodo más bajo dentro del rango obtuvo ${worstTrend.value.toFixed(1)}/5`,
-      text: `Ese punto concentra ${worstTrend.count} ${worstTrend.count === 1 ? 'respuesta' : 'respuestas'}. Conviene compararlo con horarios, personal y carga operativa.`
+      title: `${periodName} tuvo la satisfacción más baja: ${worstTrend.value.toFixed(1)}/5`,
+      text: sampleText
     });
   }
 
@@ -358,6 +364,12 @@ function buildInsights(ctx) {
   }
 
   return { attention: attention.slice(0, 3), positive: positive.slice(0, 3) };
+}
+
+function shortDateEs(iso) {
+  const months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const d = isoToDate(iso);
+  return `${d.getUTCDate()} ${months[d.getUTCMonth()]}`;
 }
 
 function previousRange(from, to) {

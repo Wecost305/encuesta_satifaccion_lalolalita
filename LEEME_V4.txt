@@ -1,0 +1,20 @@
+LALO LALITA - ENCUESTA V4 / FASE 3
+
+Esta versión conserva la encuesta pública en:
+  /
+
+y agrega el dashboard administrativo de demostración en:
+  /admin/
+
+IMPORTANTE:
+- /admin todavía utiliza datos simulados.
+- Todavía NO lee Airtable.
+- Todavía NO tiene autenticación/login real.
+- El objetivo de esta versión es aprobar diseño, indicadores, gráficas y navegación antes de conectar datos sensibles.
+- La función submit-survey existente se conserva.
+
+Siguiente fase después de aprobar el dashboard:
+1. Crear función Netlify de lectura segura de Airtable.
+2. Calcular métricas por rango de Fecha_Visita.
+3. Reemplazar datos simulados por datos reales.
+4. Agregar autenticación a /admin.

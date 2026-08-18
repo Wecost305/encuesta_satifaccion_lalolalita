@@ -352,7 +352,7 @@
         </div>
       </div>
       <button class="filter-btn" id="applyFilter" type="button">Generar análisis</button>
-      <div class="period-note" id="periodNote">Periodo mostrado: 11–17 agosto 2026</div>
+      <div class="period-note" id="periodNote">Calculando periodo…</div>
     </section>
 
     <section class="kpis">
@@ -368,23 +368,23 @@
       </article>
       <article class="card kpi">
         <div class="label">Satisfacción promedio</div>
-        <div class="value" id="kpiSatisfaction">4.1<span style="font-size:13px;color:var(--muted)"> / 5</span></div>
+        <div class="value" id="kpiSatisfaction">…</div>
         <div class="sub">Promedio de las 7 áreas evaluadas</div>
       </article>
       <article class="card kpi">
         <div class="label">NPS</div>
-        <div class="value" id="kpiNps">+48</div>
-        <div class="sub"><span class="trend-up">▲ 6 pts</span> vs. periodo anterior</div>
+        <div class="value" id="kpiNps">…</div>
+        <div class="sub" id="kpiNpsSub">Comparación contra el periodo anterior</div>
       </article>
       <article class="card kpi">
         <div class="label">Visitas con problema</div>
-        <div class="value" id="kpiIssues">17%</div>
-        <div class="sub">15 de 86 respuestas reportaron incidencia</div>
+        <div class="value" id="kpiIssues">…</div>
+        <div class="sub" id="kpiIssuesSub">Calculando incidencias del periodo</div>
       </article>
       <article class="card kpi">
         <div class="label">Área más débil</div>
-        <div class="value" style="font-size:20px" id="kpiWeak">Tiempo servicio</div>
-        <div class="sub"><span class="trend-down">3.2 / 5</span> · requiere seguimiento</div>
+        <div class="value" style="font-size:20px" id="kpiWeak">…</div>
+        <div class="sub" id="kpiWeakSub">Calculando área con menor promedio</div>
       </article>
     </section>
 
@@ -417,7 +417,7 @@
       <article class="card panel">
         <div class="panel-head">
           <div><h2>Problemas reportados</h2><div class="desc">Incidencias seleccionadas por los clientes</div></div>
-          <span class="pill">15 respuestas con problema</span>
+          <span class="pill" id="problemPill">— respuestas con problema</span>
         </div>
         <div class="chart-wrap small"><canvas id="problemsChart"></canvas></div>
       </article>
@@ -426,200 +426,61 @@
     <section class="insights">
       <article class="card insight-panel">
         <div class="panel-head"><div><h2>Qué requiere atención</h2><div class="desc">Conclusiones directas para el responsable del negocio</div></div></div>
-        <div class="insight-list">
-          <div class="insight bad"><strong>Tiempo de servicio es el punto más débil</strong><p>Obtiene 3.2/5 y concentra varias menciones de espera. Conviene revisar capacidad de atención durante los horarios de mayor carga.</p></div>
-          <div class="insight warn"><strong>Viernes y sábado bajan el promedio</strong><p>La satisfacción cae por debajo de 4.0 en ambos días. El patrón sugiere revisar personal, tiempos y flujo operativo durante el fin de semana.</p></div>
-          <div class="insight warn"><strong>Calidad-precio necesita seguimiento</strong><p>Con 3.6/5 es la segunda evaluación más baja. Conviene revisar comentarios relacionados con porciones, precios y expectativa del cliente.</p></div>
-        </div>
+        <div class="insight-list" id="attentionInsights"></div>
       </article>
 
       <article class="card insight-panel">
         <div class="panel-head"><div><h2>Qué está funcionando</h2><div class="desc">Fortalezas que conviene mantener</div></div></div>
-        <div class="insight-list">
-          <div class="insight good"><strong>El sabor lidera la experiencia</strong><p>Con 4.7/5 es el atributo mejor evaluado y se mantiene estable durante toda la semana.</p></div>
-          <div class="insight good"><strong>La atención también destaca</strong><p>El personal obtiene 4.5/5. Esta fortaleza puede ayudar a recuperar experiencias cuando existen retrasos operativos.</p></div>
-          <div class="insight good"><strong>NPS positivo</strong><p>El NPS de +48 indica que hay más promotores que detractores. El objetivo será elevarlo corrigiendo los principales puntos de fricción.</p></div>
-        </div>
+        <div class="insight-list" id="positiveInsights"></div>
       </article>
     </section>
 
     <section class="card comments">
       <div class="panel-head">
         <div><h2>Comentarios recientes</h2><div class="desc">Muestra de opiniones que ayudan a interpretar las métricas</div></div>
-        <span class="pill">Últimos 7 días</span>
+        <span class="pill" id="commentsPill">Periodo seleccionado</span>
       </div>
       <div style="overflow-x:auto">
         <table class="comments-table">
           <thead><tr><th>Fecha</th><th>Horario</th><th>Comentario</th><th>NPS</th><th>Lectura rápida</th></tr></thead>
-          <tbody>
-            <tr><td>17 ago</td><td>Noche / Bar</td><td>“Muy buen sabor, pero tardaron bastante en traer la comida.”</td><td>7</td><td><span class="status bad">Tiempo</span></td></tr>
-            <tr><td>16 ago</td><td>Comida</td><td>“Todo excelente, especialmente la atención del mesero.”</td><td>10</td><td><span class="status good">Positivo</span></td></tr>
-            <tr><td>15 ago</td><td>Cena</td><td>“La comida estuvo bien pero sentí alto el precio para la porción.”</td><td>6</td><td><span class="status bad">Precio</span></td></tr>
-            <tr><td>14 ago</td><td>Desayuno</td><td>“Lugar agradable y limpio. Regresaría.”</td><td>9</td><td><span class="status good">Positivo</span></td></tr>
-            <tr><td>13 ago</td><td>Comida</td><td>“Experiencia normal, sin ningún problema.”</td><td>8</td><td><span class="status neutral">Neutral</span></td></tr>
-          </tbody>
+          <tbody id="commentsBody"></tbody>
         </table>
       </div>
     </section>
 
-    <p class="footer-note">Fase 3.2 · Respuestas totales y Respuestas analizadas por Fecha_Visita ya usan Airtable real. Los demás indicadores continúan con datos de demostración hasta la siguiente integración.</p>
+    <p class="footer-note">Fase 3.2 · Dashboard conectado a Airtable. Todos los indicadores, gráficas, comentarios y conclusiones se calculan con las respuestas incluidas en el periodo seleccionado.</p>
   </main>
 
   <script>
-    let realTotalResponses = null;
-    let realAnalyzedResponses = null;
-
-    function pad2(value) {
-      return String(value).padStart(2, '0');
-    }
-
-    function toIsoLocal(date) {
-      return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
-    }
-
-    function parseIsoLocal(value) {
-      const [year, month, day] = value.split('-').map(Number);
-      return new Date(year, month - 1, day);
-    }
-
-    function addDays(date, amount) {
-      const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-      result.setDate(result.getDate() + amount);
-      return result;
-    }
-
-    function formatDateLong(date) {
-      return new Intl.DateTimeFormat('es-MX', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric'
-      }).format(date).replace('.', '');
-    }
-
-    function formatRangeLabel(from, to) {
-      return `Periodo mostrado: ${formatDateLong(parseIsoLocal(from))} – ${formatDateLong(parseIsoLocal(to))}`;
-    }
+    function pad2(value) { return String(value).padStart(2, '0'); }
+    function toIsoLocal(date) { return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`; }
+    function parseIsoLocal(value) { const [y,m,d] = value.split('-').map(Number); return new Date(y, m-1, d); }
+    function addDays(date, amount) { const r = new Date(date.getFullYear(), date.getMonth(), date.getDate()); r.setDate(r.getDate()+amount); return r; }
+    function formatDateLong(date) { return new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short',year:'numeric'}).format(date).replace('.', ''); }
+    function formatRangeLabel(from,to) { return `Periodo mostrado: ${formatDateLong(parseIsoLocal(from))} – ${formatDateLong(parseIsoLocal(to))}`; }
+    function formatShortIso(iso) { if (!iso) return '—'; return new Intl.DateTimeFormat('es-MX',{day:'numeric',month:'short'}).format(parseIsoLocal(iso)).replace('.', ''); }
+    function escapeHtml(value) { return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+    function signed(value) { return value > 0 ? `+${value}` : String(value); }
 
     function getSelectedDateRange() {
       const key = document.getElementById('periodo').value;
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-      if (key === '7') {
-        return { from: toIsoLocal(addDays(today, -6)), to: toIsoLocal(today) };
-      }
-
-      if (key === '30') {
-        return { from: toIsoLocal(addDays(today, -29)), to: toIsoLocal(today) };
-      }
-
+      if (key === '7') return { from: toIsoLocal(addDays(today,-6)), to: toIsoLocal(today) };
+      if (key === '30') return { from: toIsoLocal(addDays(today,-29)), to: toIsoLocal(today) };
       if (key === 'week') {
-        // Semana anterior completa: lunes a domingo.
-        const dayOfWeek = today.getDay(); // 0 domingo, 1 lunes...
-        const daysSinceMonday = (dayOfWeek + 6) % 7;
-        const currentMonday = addDays(today, -daysSinceMonday);
-        const previousMonday = addDays(currentMonday, -7);
-        const previousSunday = addDays(currentMonday, -1);
-        return { from: toIsoLocal(previousMonday), to: toIsoLocal(previousSunday) };
+        const daysSinceMonday = (today.getDay()+6)%7;
+        const currentMonday = addDays(today,-daysSinceMonday);
+        return { from:toIsoLocal(addDays(currentMonday,-7)), to:toIsoLocal(addDays(currentMonday,-1)) };
       }
-
       if (key === 'custom') {
         const from = document.getElementById('desde').value;
         const to = document.getElementById('hasta').value;
-        if (!from || !to) {
-          throw new Error('Selecciona las fechas Desde y Hasta.');
-        }
-        if (from > to) {
-          throw new Error('La fecha Desde no puede ser posterior a Hasta.');
-        }
-        return { from, to };
+        if (!from || !to) throw new Error('Selecciona las fechas Desde y Hasta.');
+        if (from > to) throw new Error('La fecha Desde no puede ser posterior a Hasta.');
+        return {from,to};
       }
-
-      return { from: toIsoLocal(addDays(today, -6)), to: toIsoLocal(today) };
-    }
-
-    async function loadRealAirtableCounts(range) {
-      const status = document.getElementById('dataStatus');
-      const totalValue = document.getElementById('kpiResponsesTotal');
-      const totalSub = document.getElementById('kpiResponsesTotalSub');
-      const analyzedValue = document.getElementById('kpiResponsesAnalyzed');
-      const analyzedSub = document.getElementById('kpiResponsesAnalyzedSub');
-
-      analyzedValue.textContent = '…';
-      analyzedSub.textContent = 'Calculando encuestas del periodo seleccionado';
-
-      try {
-        const params = new URLSearchParams({ from: range.from, to: range.to });
-        const response = await fetch(`/.netlify/functions/dashboard-data?${params.toString()}`, {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          cache: 'no-store'
-        });
-
-        let payload = {};
-        try { payload = await response.json(); } catch (_) {}
-
-        if (!response.ok || !payload.success) {
-          throw new Error(payload.error || `HTTP ${response.status}`);
-        }
-
-        realTotalResponses = payload.total;
-        realAnalyzedResponses = payload.analyzed;
-
-        totalValue.textContent = realTotalResponses.toLocaleString('es-MX');
-        totalSub.textContent = 'Total acumulado de registros en Airtable';
-
-        analyzedValue.textContent = realAnalyzedResponses.toLocaleString('es-MX');
-        analyzedSub.textContent = `De ${realTotalResponses.toLocaleString('es-MX')} respuestas totales · según Fecha_Visita`;
-
-        status.textContent = 'AIRTABLE CONECTADO · CONTEOS REALES · DEMÁS DATOS DEMO';
-        status.style.background = '#e3f5e9';
-        status.style.color = '#287c43';
-        status.style.borderColor = '#b9dfc5';
-      } catch (error) {
-        console.error('No se pudo leer Airtable:', error);
-        totalValue.textContent = realTotalResponses !== null ? realTotalResponses.toLocaleString('es-MX') : '—';
-        analyzedValue.textContent = '—';
-        analyzedSub.textContent = error.message || 'No fue posible consultar el periodo.';
-        status.textContent = 'ERROR DE CONEXIÓN AIRTABLE';
-        status.style.background = '#fde5e5';
-        status.style.color = '#a83b3b';
-        status.style.borderColor = '#efbcbc';
-      }
-    }
-
-    const dashboardSets = {
-      '7': {
-        note: 'Periodo mostrado: 11–17 agosto 2026',
-        responses: 86,
-        satisfaction: '4.1', nps: '+48', issues: '17%', weak: 'Tiempo servicio',
-        trend: [4.3,4.4,4.1,4.2,3.8,3.7,4.0],
-        days: ['Lun 11','Mar 12','Mié 13','Jue 14','Vie 15','Sáb 16','Dom 17'],
-        scores: [['Sabor',4.7],['Atención',4.5],['Limpieza',4.3],['Presentación',4.1],['Ambiente',3.9],['Calidad / Precio',3.6],['Tiempo servicio',3.2]],
-        consumption: [62,51,34,47,29,14,22],
-        problems: [11,8,6,4,3,2]
-      },
-      'week': {
-        note: 'Periodo mostrado: 4–10 agosto 2026', responses: 77, satisfaction: '4.0', nps: '+42', issues: '19%', weak: 'Tiempo servicio',
-        trend: [4.1,4.0,4.3,4.0,3.7,3.6,4.1], days: ['Lun 4','Mar 5','Mié 6','Jue 7','Vie 8','Sáb 9','Dom 10'],
-        scores: [['Sabor',4.6],['Atención',4.4],['Limpieza',4.2],['Presentación',4.0],['Ambiente',3.8],['Calidad / Precio',3.5],['Tiempo servicio',3.1]],
-        consumption: [58,49,30,42,25,12,19], problems: [12,7,5,5,3,2]
-      },
-      '30': {
-        note: 'Periodo mostrado: últimos 30 días', responses: 341, satisfaction: '4.1', nps: '+45', issues: '18%', weak: 'Tiempo servicio',
-        trend: [4.0,4.1,4.2,4.0,4.1,4.2,4.1], days: ['Sem 1','Sem 2','Sem 3','Sem 4','Sem 5','Sem 6','Actual'],
-        scores: [['Sabor',4.6],['Atención',4.5],['Limpieza',4.3],['Presentación',4.1],['Ambiente',3.9],['Calidad / Precio',3.6],['Tiempo servicio',3.3]],
-        consumption: [64,53,36,45,27,16,24], problems: [39,26,18,15,10,7]
-      }
-    };
-
-    const scoreList = document.getElementById('scoreList');
-    function renderScores(scores) {
-      scoreList.innerHTML = scores.map(([label,value]) => {
-        const pct = Math.max(0, Math.min(100, value / 5 * 100));
-        const cls = value < 3.5 ? 'bad' : value < 4 ? 'warn' : '';
-        return `<div class="score-row"><div class="score-label">${label}</div><div class="track"><div class="bar ${cls}" style="width:${pct}%"></div></div><div class="score">${value.toFixed(1)}</div></div>`;
-      }).join('');
+      return { from:toIsoLocal(addDays(today,-6)), to:toIsoLocal(today) };
     }
 
     Chart.defaults.font.family = 'Montserrat';
@@ -627,61 +488,119 @@
     const gridColor = '#edf0f3';
 
     const trendChart = new Chart(document.getElementById('trendChart'), {
-      type: 'line',
-      data: { labels: dashboardSets['7'].days, datasets: [{ label: 'Satisfacción', data: dashboardSets['7'].trend, borderColor: '#6a9eda', backgroundColor: 'rgba(162,210,255,.22)', fill: true, tension: .35, pointRadius: 4, pointHoverRadius: 6 }] },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display:false } }, scales: { y: { min:1, max:5, ticks:{ stepSize:1 }, grid:{ color:gridColor } }, x:{ grid:{ display:false } } } }
+      type:'line',
+      data:{labels:[],datasets:[{label:'Satisfacción',data:[],borderColor:'#6a9eda',backgroundColor:'rgba(162,210,255,.22)',fill:true,tension:.35,pointRadius:4,pointHoverRadius:6,spanGaps:false}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{title:items=>items[0]?.label||'',label:c=>c.raw==null?'Sin respuestas':`Satisfacción: ${Number(c.raw).toFixed(1)}/5`}}},scales:{y:{min:1,max:5,ticks:{stepSize:1},grid:{color:gridColor}},x:{grid:{display:false}}}}
     });
-
     const consumptionChart = new Chart(document.getElementById('consumptionChart'), {
-      type: 'bar',
-      data: { labels: ['Platillo principal','Bebidas sin alcohol','Entrada','Postre','Cerveza','Vino','Coctelería'], datasets:[{ data:dashboardSets['7'].consumption, backgroundColor:'#6a9eda', borderRadius:6 }] },
-      options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.raw}% de encuestados`}}}, scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:gridColor}},y:{grid:{display:false}}} }
+      type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#6a9eda',borderRadius:6}]},
+      options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.raw}% de encuestados`}}},scales:{x:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:gridColor}},y:{grid:{display:false}}}}
     });
-
     const problemsChart = new Chart(document.getElementById('problemsChart'), {
-      type:'bar',
-      data:{ labels:['Espera','Limpieza','Alimentos fríos','Atención','Cuenta','Sin producto'], datasets:[{data:dashboardSets['7'].problems, backgroundColor:'#e59d3b', borderRadius:6}]},
+      type:'bar',data:{labels:[],datasets:[{data:[],backgroundColor:'#e59d3b',borderRadius:6}]},
       options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:gridColor}},x:{grid:{display:false}}}}
     });
 
-    renderScores(dashboardSets['7'].scores);
-
-    const periodo = document.getElementById('periodo');
-    const customDates = document.getElementById('customDates');
-    periodo.addEventListener('change', () => customDates.classList.toggle('active', periodo.value === 'custom'));
-
-    async function applySelectedPeriod() {
-      let key = periodo.value;
-      let data = dashboardSets[key] || dashboardSets['7'];
-
-      try {
-        const range = getSelectedDateRange();
-        document.getElementById('periodNote').textContent = formatRangeLabel(range.from, range.to);
-        await loadRealAirtableCounts(range);
-
-        // En esta versión solo los dos conteos son reales. El resto conserva
-        // los conjuntos DEMO mientras integramos las métricas una por una.
-        if (key === 'custom') data = dashboardSets['7'];
-        document.getElementById('kpiSatisfaction').innerHTML = `${data.satisfaction}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
-        document.getElementById('kpiNps').textContent = data.nps;
-        document.getElementById('kpiIssues').textContent = data.issues;
-        document.getElementById('kpiWeak').textContent = data.weak;
-        renderScores(data.scores);
-        trendChart.data.labels = data.days;
-        trendChart.data.datasets[0].data = data.trend;
-        trendChart.update();
-        consumptionChart.data.datasets[0].data = data.consumption;
-        consumptionChart.update();
-        problemsChart.data.datasets[0].data = data.problems;
-        problemsChart.update();
-      } catch (error) {
-        document.getElementById('periodNote').textContent = error.message;
-      }
+    function renderScores(scores) {
+      const el = document.getElementById('scoreList');
+      if (!scores?.length || scores.every(s=>s.value==null)) { el.innerHTML='<div class="desc">Sin evaluaciones para este periodo.</div>'; return; }
+      el.innerHTML = [...scores].sort((a,b)=>(b.value??-1)-(a.value??-1)).map(s=>{
+        const value=s.value;
+        const pct=value==null?0:Math.max(0,Math.min(100,value/5*100));
+        const cls=value==null?'':value<3.5?'bad':value<4?'warn':'';
+        return `<div class="score-row"><div class="score-label">${escapeHtml(s.label)}</div><div class="track"><div class="bar ${cls}" style="width:${pct}%"></div></div><div class="score">${value==null?'—':value.toFixed(1)}</div></div>`;
+      }).join('');
     }
 
-    document.getElementById('applyFilter').addEventListener('click', applySelectedPeriod);
+    function renderInsights(id, items) {
+      const el=document.getElementById(id);
+      el.innerHTML=(items||[]).map(x=>`<div class="insight ${escapeHtml(x.tone||'warn')}"><strong>${escapeHtml(x.title)}</strong><p>${escapeHtml(x.text)}</p></div>`).join('') || '<div class="desc">Sin datos suficientes.</div>';
+    }
 
-    // Carga inicial: últimos 7 días reales.
+    function renderComments(items) {
+      const body=document.getElementById('commentsBody');
+      if (!items?.length) { body.innerHTML='<tr><td colspan="5">No hay comentarios escritos en este periodo.</td></tr>'; return; }
+      body.innerHTML=items.map(x=>`<tr><td>${escapeHtml(formatShortIso(x.date))}</td><td>${escapeHtml(x.horario||'—')}</td><td>“${escapeHtml(x.comment)}”</td><td>${x.nps==null?'—':escapeHtml(x.nps)}</td><td><span class="status ${escapeHtml(x.quick?.tone||'neutral')}">${escapeHtml(x.quick?.label||'Neutral')}</span></td></tr>`).join('');
+    }
+
+    function renderTrend(trend) {
+      const labels=(trend?.labels||[]).map(iso=>trend.granularity==='week'?`Sem. ${formatShortIso(iso)}`:formatShortIso(iso));
+      trendChart.data.labels=labels;
+      trendChart.data.datasets[0].data=trend?.values||[];
+      trendChart.update();
+    }
+
+    function setLoading() {
+      document.getElementById('dataStatus').textContent='ACTUALIZANDO DATOS…';
+      document.getElementById('kpiResponsesAnalyzed').textContent='…';
+    }
+
+    async function loadDashboard(range) {
+      setLoading();
+      const params=new URLSearchParams({from:range.from,to:range.to});
+      const response=await fetch(`/.netlify/functions/dashboard-data?${params.toString()}`,{headers:{Accept:'application/json'},cache:'no-store'});
+      let data={}; try{data=await response.json();}catch(_){ }
+      if(!response.ok||!data.success) throw new Error(data.error||`HTTP ${response.status}`);
+
+      const m=data.metrics||{};
+      document.getElementById('kpiResponsesTotal').textContent=Number(data.total||0).toLocaleString('es-MX');
+      document.getElementById('kpiResponsesTotalSub').textContent='Total acumulado de registros en Airtable';
+      document.getElementById('kpiResponsesAnalyzed').textContent=Number(data.analyzed||0).toLocaleString('es-MX');
+      document.getElementById('kpiResponsesAnalyzedSub').textContent=`De ${Number(data.total||0).toLocaleString('es-MX')} respuestas totales · según Fecha_Visita`;
+
+      document.getElementById('kpiSatisfaction').innerHTML=m.satisfaction==null?'—':`${m.satisfaction.toFixed(1)}<span style="font-size:13px;color:var(--muted)"> / 5</span>`;
+      document.getElementById('kpiNps').textContent=m.nps==null?'—':signed(m.nps);
+      const prevNps=data.previous?.nps;
+      if(m.nps!=null && prevNps!=null){
+        const diff=m.nps-prevNps;
+        const cls=diff>0?'trend-up':diff<0?'trend-down':'';
+        document.getElementById('kpiNpsSub').innerHTML=`<span class="${cls}">${diff>0?'▲ ':diff<0?'▼ ':''}${diff===0?'Sin cambio':Math.abs(diff)+' pts'}</span> vs. periodo anterior`;
+      }else document.getElementById('kpiNpsSub').textContent='Sin comparación suficiente con el periodo anterior';
+
+      document.getElementById('kpiIssues').textContent=m.issueRate==null?'—':`${m.issueRate.toFixed(1)}%`;
+      document.getElementById('kpiIssuesSub').textContent=`${m.issueCount||0} de ${data.analyzed||0} respuestas reportaron incidencia`;
+      document.getElementById('problemPill').textContent=`${m.issueCount||0} respuestas con problema`;
+
+      document.getElementById('kpiWeak').textContent=m.weakArea?.label||'—';
+      document.getElementById('kpiWeakSub').innerHTML=m.weakArea?.value!=null?`<span class="${m.weakArea.value<3.5?'trend-down':''}">${m.weakArea.value.toFixed(1)} / 5</span> · menor promedio del periodo`:'Sin evaluaciones en el periodo';
+
+      renderScores(m.areaScores||[]);
+      renderTrend(m.trend||{});
+
+      consumptionChart.data.labels=m.consumption?.labels||[];
+      consumptionChart.data.datasets[0].data=m.consumption?.percentages||[];
+      consumptionChart.update();
+      problemsChart.data.labels=(m.problems?.labels||[]).map(x=>x==='Orden tardó demasiado'?'Espera':x==='Producto no disponible'?'Sin producto':x);
+      problemsChart.data.datasets[0].data=m.problems?.counts||[];
+      problemsChart.update();
+
+      renderInsights('attentionInsights',m.insights?.attention||[]);
+      renderInsights('positiveInsights',m.insights?.positive||[]);
+      renderComments(m.comments||[]);
+      document.getElementById('commentsPill').textContent=`${data.analyzed||0} respuestas analizadas`;
+
+      const status=document.getElementById('dataStatus');
+      status.textContent='AIRTABLE CONECTADO · DATOS REALES';
+      status.style.background='#e3f5e9'; status.style.color='#287c43'; status.style.borderColor='#b9dfc5';
+    }
+
+    const periodo=document.getElementById('periodo');
+    const customDates=document.getElementById('customDates');
+    periodo.addEventListener('change',()=>customDates.classList.toggle('active',periodo.value==='custom'));
+
+    async function applySelectedPeriod(){
+      try{
+        const range=getSelectedDateRange();
+        document.getElementById('periodNote').textContent=formatRangeLabel(range.from,range.to);
+        await loadDashboard(range);
+      }catch(error){
+        console.error(error);
+        const status=document.getElementById('dataStatus');
+        status.textContent='ERROR AL CARGAR DATOS'; status.style.background='#fde5e5'; status.style.color='#a83b3b'; status.style.borderColor='#efbcbc';
+        document.getElementById('periodNote').textContent=error.message;
+      }
+    }
+    document.getElementById('applyFilter').addEventListener('click',applySelectedPeriod);
     applySelectedPeriod();
   </script>
 </body>

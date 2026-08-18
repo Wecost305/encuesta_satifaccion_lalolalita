@@ -1,44 +1,60 @@
-// Importamos el paquete fetch
 const fetch = require('node-fetch');
 
-// IMPORTANTE: Pega aquí la URL de tu webhook de Airtable
-const AIRTABLE_WEBHOOK_URL = 'https://hooks.airtable.com/workflows/v1/genericWebhook/appPSJjK5UqoxGnkl/wfli1mkUUsFF7GYWA/wtrbbLe2OT6CYbjk2';
+exports.handler = async function (event) {
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ error: 'Method Not Allowed' })
+    };
+  }
 
-exports.handler = async function(event, context) {
-  if (event.httpMethod !== 'POST' ) {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+  const airtableWebhookUrl = process.env.AIRTABLE_WEBHOOK_URL;
+  if (!airtableWebhookUrl) {
+    console.error('Falta AIRTABLE_WEBHOOK_URL en las variables de entorno.');
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ error: 'Configuración incompleta del servidor.' })
+    };
   }
 
   try {
-    const data = JSON.parse(event.body);
+    const data = JSON.parse(event.body || '{}');
 
-    const response = await fetch(AIRTABLE_WEBHOOK_URL, {
+    const response = await fetch(airtableWebhookUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
     });
 
-    // Esta línea es clave: necesitamos leer la respuesta de Airtable
-    const airtableResponse = await response.json();
+    let airtableResponse = {};
+    try {
+      airtableResponse = await response.json();
+    } catch (_) {
+      airtableResponse = {};
+    }
 
     if (!response.ok) {
-      // Si Airtable devuelve un error, lo registramos para poder verlo en los logs
-      console.error('Error desde Airtable:', airtableResponse);
-      return { statusCode: response.status, body: JSON.stringify(airtableResponse) };
+      console.error('Error desde Airtable webhook:', response.status, airtableResponse);
+      return {
+        statusCode: response.status,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
+        body: JSON.stringify({ error: 'Airtable rechazó la encuesta.' })
+      };
     }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ message: 'Encuesta enviada con éxito' }),
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ message: 'Encuesta enviada con éxito' })
     };
-
   } catch (error) {
-    console.error('Error en la función:', error);
+    console.error('Error en submit-survey:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ error: 'No fue posible procesar la encuesta.' })
     };
   }
 };

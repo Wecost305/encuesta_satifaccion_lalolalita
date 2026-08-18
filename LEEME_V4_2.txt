@@ -1,0 +1,14 @@
+LALO LALITA - V4.2 CONTEO POR PERIODO
+
+Cambios:
+- Respuestas totales: total acumulado real de Airtable.
+- Respuestas analizadas: conteo real filtrado por Fecha_Visita.
+- Últimos 7 días, semana anterior, últimos 30 días y rango personalizado calculan el número real de encuestas del periodo.
+- El endpoint dashboard-data acepta ?from=YYYY-MM-DD&to=YYYY-MM-DD y devuelve total + analyzed.
+- Las demás métricas/gráficas siguen siendo DEMO en esta subfase.
+
+Variables requeridas en Netlify:
+AIRTABLE_TOKEN
+AIRTABLE_BASE_ID
+AIRTABLE_TABLE_NAME
+AIRTABLE_WEBHOOK_URL

@@ -2,7 +2,7 @@
 const fetch = require('node-fetch');
 
 // IMPORTANTE: Pega aquí la URL de tu webhook de Airtable
-const AIRTABLE_WEBHOOK_URL = process.env.AIRTABLE_WEBHOOK_URL;
+const AIRTABLE_WEBHOOK_URL = 'https://hooks.airtable.com/workflows/v1/genericWebhook/appPSJjK5UqoxGnkl/wfli1mkUUsFF7GYWA/wtrbbLe2OT6CYbjk2';
 
 exports.handler = async function(event, context) {
   if (event.httpMethod !== 'POST' ) {

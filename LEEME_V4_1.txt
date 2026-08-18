@@ -1,0 +1,37 @@
+LALO LALITA - V4.1 AIRTABLE
+===========================
+
+Objetivo de esta versión
+------------------------
+1. Mantener la encuesta pública en /.
+2. Mantener el dashboard visual en /admin/.
+3. Leer de Airtable el número REAL total de registros mediante una Netlify Function.
+4. Mantener temporalmente el resto de KPIs y gráficas con datos de demostración.
+5. Eliminar del código la URL hardcodeada del webhook y usar AIRTABLE_WEBHOOK_URL.
+
+Variables requeridas en Netlify
+-------------------------------
+AIRTABLE_WEBHOOK_URL
+AIRTABLE_TOKEN
+AIRTABLE_BASE_ID
+AIRTABLE_TABLE_NAME
+
+Prueba después del deploy
+-------------------------
+1. Abrir:
+   /.netlify/functions/dashboard-data
+
+   Debe devolver algo similar a:
+   {"success":true,"total":51,"source":"airtable",...}
+
+2. Abrir:
+   /admin/
+
+   La tarjeta RESPUESTAS debe mostrar el mismo total real de Airtable.
+
+3. Verificar que la encuesta pública / siga enviando registros correctamente.
+
+Nota
+----
+En V4.1 el total de respuestas es el total completo de Airtable, todavía no se filtra por Fecha_Visita.
+Los filtros por periodo y todos los demás KPIs se conectarán en la siguiente subfase.
